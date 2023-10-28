@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@vercel/remix";
 import { HDate } from '@hebcal/core';
+import { useLoaderData } from '@remix-run/react';
 
 const currentYear = new HDate().renderGematriya().split(' ')[2];
 
@@ -10,9 +11,16 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export async function loader() {
+  console.log('loader', process.env.GOOGLE_API_KEY);
+  return process.env.GOOGLE_API_KEY;
+}
+
 
 export default function Index() {
-  console.log('process.env.GOOGLE_API_KEY');
+  const data = useLoaderData<typeof loader>();
+  console.log('APP', data);
+
   return (
     <form>
       <h1>

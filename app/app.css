@@ -1,0 +1,16 @@
+html {
+    direction: rtl;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.price {
+    font-weight: bold;
+}
+
+.footer {
+    font-weight: bold;
+}

@@ -1,41 +1,46 @@
 import type { MetaFunction } from "@vercel/remix";
+import { HDate } from '@hebcal/core';
+
+const currentYear = new HDate().renderGematriya().split(' ')[2];
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title:  `טופס משלוח מנות מושבי - גמזו - ${currentYear}` },
+    { name: "description", content: "טופס משלוח מנות מושבי - גמזו" },
   ];
 };
 
+
 export default function Index() {
+  console.log('process.env.GOOGLE_API_KEY');
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <form>
+      <h1>
+        טופס משלוח מנות מושבי - גמזו - {currentYear}
+      </h1>
+      <div>
+        <label>בחר את שמך מהרשימה: </label>
+        <select><option>aaaa</option></select>
+      </div>
+      <div>
+        <label> האם תרצו לתת משלוחים לכל המושב? </label>
+        <button>כן, לכולם</button>
+        <button>לא, רק למשפחות שאבחר</button>
+      </div>
+      <div>
+        <label>  לאיזה משפחות תרצו לתת? </label>
+        <button>משפחת לוי</button>
+        <button>משפחת כהן</button>
+      </div>
+      <div>
+        <label> הסכום לתשלום: </label>
+        <label className={'price'}>750 ₪</label>
+      </div>
+      <div>
+        <label className="footer">
+          התשלום הינו תנאי הכרחי להפעלת הרשימה שבחרתם.
+        </label>
+      </div>
+    </form>
   );
 }

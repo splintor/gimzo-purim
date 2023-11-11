@@ -5,3 +5,4 @@
 5. Copy submission logic for Google Sheet and implement it in server code
 6. Find the best UI to select families (and implement it)
 7. Implement Thank You page
+8. Add "Force update" page

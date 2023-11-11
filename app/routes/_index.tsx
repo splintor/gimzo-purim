@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@vercel/remix";
 import { HDate } from '@hebcal/core';
 import { useLoaderData } from '@remix-run/react';
+import { getData } from '~/googleapis.server';
 
 const currentYear = new HDate().renderGematriya().split(' ')[2];
 
@@ -12,14 +13,11 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader() {
-  console.log('loader', process.env.GOOGLE_API_KEY);
-  return process.env.GOOGLE_API_KEY;
+  return await getData();
 }
 
-
 export default function Index() {
-  const data = useLoaderData<typeof loader>();
-  console.log('APP', data);
+  const { names } = useLoaderData<typeof loader>();
 
   return (
     <form>
@@ -28,7 +26,7 @@ export default function Index() {
       </h1>
       <div>
         <label>בחר את שמך מהרשימה: </label>
-        <select><option>aaaa</option></select>
+        <select>{names.map(name => <option>{name}</option>)}</select>
       </div>
       <div>
         <label> האם תרצו לתת משלוחים לכל המושב? </label>

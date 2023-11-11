@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { MetaFunction } from "@vercel/remix";
+import type { ActionFunctionArgs, MetaFunction } from "@vercel/remix";
+import { Form, useLoaderData } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
-import { useLoaderData } from '@remix-run/react';
-import { getData } from '~/googleapis.server';
+import { getData, saveForm } from '~/googleapis.server';
 
 const currentYear = new HDate().renderGematriya().split(' ')[2];
 
@@ -17,21 +17,31 @@ export async function loader() {
   return await getData();
 }
 
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const params = Object.fromEntries(formData) as Record<string, string>;
+  await saveForm(params);
+  return null;
+}
+
 export default function Index() {
   const { names } = useLoaderData<typeof loader>();
   const [name, setName] = useState('');
+  const [sum, setSum] = useState(750);
+
   useEffect(() => {
     console.log('name', name);
   }, [name]);
 
   return (
-    <form method="post">
+    <Form method="post">
       <h1>
         טופס משלוח מנות מושבי - גמזו - {currentYear}
       </h1>
       <div>
         <label>בחר את שמך מהרשימה: </label>
-        <select onInput={event => {
+        <input type="hidden" name="sum" value={sum}/>
+        <select name="senderName" onInput={event => {
           const option = (event.target as HTMLSelectElement)?.selectedOptions[0];
           const name = option.id === '-1' ? '' : option.label;
           setName(name);
@@ -53,15 +63,18 @@ export default function Index() {
           </div>
           <div>
             <label> הסכום לתשלום: </label>
-            <label className={'price'}>750 ₪</label>
+            <label className={'price'}>{sum} ₪</label>
           </div>
           <div>
             <label className="footer">
               התשלום הינו תנאי הכרחי להפעלת הרשימה שבחרתם.
             </label>
           </div>
+          <div>
+            <button type="submit">שלח טופס הרשמה ועבור לדף התשלום</button>
+          </div>
         </>
       )}
-    </form>
+    </Form>
   );
 }

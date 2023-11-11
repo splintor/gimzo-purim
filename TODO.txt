@@ -1,4 +1,7 @@
 1. Format the form
 2. Add logs to telegram
-3. Admin page to set families list and expiration date
-4. Submit result to Excel sheet
+3. Implement form logic to show Fadiha selection and set the sum
+4. Get settings from Google Sheet and use them
+5. Copy submission logic for Google Sheet and implement it in server code
+6. Find the best UI to select families (and implement it)
+7. Implement Thank You page

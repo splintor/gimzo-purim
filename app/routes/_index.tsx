@@ -3,6 +3,7 @@ import type { ActionFunctionArgs, MetaFunction } from "@vercel/remix";
 import { Form, useLoaderData } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
 import { getData, saveForm } from '~/googleapis.server';
+import { sendToTelegram } from '~/telegram.server';
 
 const currentYear = new HDate().renderGematriya().split(' ')[2];
 
@@ -21,6 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const params = Object.fromEntries(formData) as Record<string, string>;
   await saveForm(params);
+  await sendToTelegram('Form was submitted with params: ' + JSON.stringify(params));
   return null;
 }
 

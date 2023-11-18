@@ -8,7 +8,7 @@ for the following benefits:
   them to jot form. In addition, I added an "options" sheet in the spreadsheet, to enable easy customization of the
   form behavior (like when to disable the form when it is no longer needed).
 * **Design** - I now have more control on how the UI looks. Mainly, I can have better UX for selecting families to send
-  to.
+  to. I can also remove the "reporting family" from the list of available families to send to.
 * **Submission Simplicity** - Since we control the data we submit, we can now submit only the data we need, and not all
   the form temporary fields.
 * **Logic Control** - I can now more easily control the UI logic and sum calculation, since it is done in TypeScript and

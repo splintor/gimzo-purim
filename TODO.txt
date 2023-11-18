@@ -1,5 +1,4 @@
 1. Format the form
-2. Add logs to telegram
 3. Implement form logic to show Fadiha selection and set the sum
 4. Get settings from Google Sheet and use them
 5. Copy submission logic for Google Sheet and implement it in server code (https://developers.google.com/sheets/api/samples/formatting)

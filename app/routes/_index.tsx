@@ -98,7 +98,7 @@ export default function Index() {
             התשלום הינו תנאי הכרחי להפעלת הרשימה שבחרתם.
           </label>
         </div>
-        <div>
+        <div className="submit-section">
           <button type="submit">שלח טופס הרשמה ועבור לדף התשלום</button>
         </div>
       </>)}

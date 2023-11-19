@@ -1,7 +1,6 @@
-1. Format the form
-3. Implement form logic to show Fadiha selection and set the sum
+1. Find the best UI to select families (and implement it)
+2. Implement form logic to show Fadiha selection and set the sum
+3. Implement Thank You page
 4. Get settings from Google Sheet and use them
 5. Copy submission logic for Google Sheet and implement it in server code (https://developers.google.com/sheets/api/samples/formatting)
-6. Find the best UI to select families (and implement it)
-7. Implement Thank You page
-8. Add "Force update" page
+6. Add "Force update" page

@@ -58,11 +58,11 @@ export default function Index() {
           <label> האם תרצו לתת משלוחים לכל המושב? </label>
 
           <div className="radio-button">
-            <input type="radio" id="sendToAll" name="basicTarget" value="all" defaultChecked/>
+            <input type="radio" id="sendToAll" name="basicTarget" value="all" form="" defaultChecked/>
             <label htmlFor="sendToAll">כן, לכולם</label>
           </div>
           <div className="radio-button">
-            <input type="radio" id="sendToSpecific" name="basicTarget" value="specific"/>
+            <input type="radio" id="sendToSpecific" name="basicTarget" value="specific" form=""/>
             <label htmlFor="sendToSpecific">לא, רק למשפחות שאבחר</label>
           </div>
         </div>

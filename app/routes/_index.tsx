@@ -44,7 +44,6 @@ export default function Index() {
       <div>
         <label>בחרו את שמכם מהרשימה: </label>
         <input type="hidden" name="sum" value={sum}/>
-        <input type="hidden" name="fadiha" value={fadiha}/>
         <select name="senderName" onInput={event => {
           const option = (event.target as HTMLSelectElement)?.selectedOptions[0];
           const name = option.id === '-1' ? '' : option.label;

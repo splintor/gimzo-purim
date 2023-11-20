@@ -27,7 +27,7 @@ export async function getData() {
       spreadsheetId,
       range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
     });
-    const names = namesValues.data.values!.map(([name]) => name as string);
+    const names = namesValues.data.values!.map(([name]) => name as string).sort();
     return { names };
   } catch (err) {
     console.error('Failed to get list of names', err);

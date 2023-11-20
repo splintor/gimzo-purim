@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import type { ActionFunctionArgs, MetaFunction } from "@vercel/remix";
 import { Form, useLoaderData } from '@remix-run/react';
 import { HDate } from '@hebcal/core';

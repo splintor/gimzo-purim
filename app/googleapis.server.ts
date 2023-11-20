@@ -36,14 +36,14 @@ export async function getData() {
 }
 
 
-export async function saveForm({ senderName, fadiha, names, sum }: Record<string, string>) {
+export async function saveForm({ senderName, fadiha, names = [], sum }: Record<string, string | string[]>) {
   try {
     const sheets = getGoogleSheets();
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `${registrationsSheetName}!A:A`,
       valueInputOption: 'RAW',
-      requestBody: { values: [[new Date().toISOString(), senderName, fadiha, names, (names || '').split(',').length, sum]] },
+      requestBody: { values: [[new Date().toISOString(), senderName, fadiha, (names as string[]).join(','), names.length, sum]] },
     });
   } catch (err) {
     console.error('Failed to add submission', err);

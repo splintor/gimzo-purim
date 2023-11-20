@@ -20,7 +20,8 @@ export async function loader() {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const params = Object.fromEntries(formData) as Record<string, string>;
+  const params = Object.fromEntries(formData) as Record<string, string | string[]>;
+  params.names = formData.getAll('names').map(name => name.toString());
   await saveForm(params);
   await sendToTelegram('Form was submitted with params: ' + JSON.stringify(params));
   return null;
@@ -77,10 +78,10 @@ export default function Index() {
             <label> לאיזה משפחות תרצו לתת? </label>
 
             <div className="families-selection"
-                 onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=sendToFamilies]:checked').length,
+                 onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=names]:checked').length,
                  )}>
               {names.filter(name => name !== selectedName).map(name => (
-                <span><input type="checkbox" name="sendToFamilies" id={name} key={`checkbox-${name}`}
+                <span><input type="checkbox" name="names" id={name} key={`checkbox-${name}`}
                              value={name}/><label
                   htmlFor={name}><span>{name}</span></label></span>))}
             </div>

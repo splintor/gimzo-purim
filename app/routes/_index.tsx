@@ -28,10 +28,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Index() {
   const { names } = useLoaderData<typeof loader>();
-  const [name, setName] = useState('');
+  const [selectedName, setSelectedName] = useState('');
   const [sum, setSum] = useState(750);
   const [sendToAll, setSendToAll] = useState(true);
   const [fadiha, setFadiha] = useState('true');
+  const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
 
   return (
     <Form method="post">
@@ -47,13 +48,13 @@ export default function Index() {
         <select name="senderName" onInput={event => {
           const option = (event.target as HTMLSelectElement)?.selectedOptions[0];
           const name = option.id === '-1' ? '' : option.label;
-          setName(name);
+          setSelectedName(name);
         }}>
           <option id="-1">-- יש לבחור שם --</option>
           {names.map((name, index) => <option key={index}>{name}</option>)}
         </select>
       </div>
-      {name && (<>
+      {selectedName && (<>
         <div onChange={({ target }: ChangeEvent<HTMLInputElement>) => setSendToAll(target.value === 'all')}>
           <label> האם תרצו לתת משלוחים לכל המושב? </label>
 
@@ -70,8 +71,17 @@ export default function Index() {
         {!sendToAll && (<>
           <div>
             <label> לאיזה משפחות תרצו לתת? </label>
-            <button>משפחת לוי</button>
-            <button>משפחת כהן</button>
+
+            <div className="families-selection"
+                 onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=sendToFamilies]:checked').length,
+                 )}>
+              {names.filter(name => name !== selectedName).map(name => (
+                <span><input type="checkbox" name="sendToFamilies" id={name} key={`checkbox-${name}`}
+                             value={name}/><label
+                  htmlFor={name}><span>{name}</span></label></span>))}
+            </div>
+
+            <div>{selectedFamiliesCount === 1 ? 'משפחה אחת נבחרה' : selectedFamiliesCount > 1 ? `${selectedFamiliesCount} משפחות נבחרו` : ''}</div>
           </div>
 
           <div onChange={({ target }: ChangeEvent<HTMLInputElement>) => setFadiha(target.value)}>
@@ -98,7 +108,8 @@ export default function Index() {
           </label>
         </div>
         <div className="submit-section">
-          <button type="submit">שלח טופס הרשמה ועבור לדף התשלום</button>
+          <button type="submit" disabled={!sendToAll && selectedFamiliesCount === 0}>שלח טופס הרשמה ועבור לדף התשלום
+          </button>
         </div>
       </>)}
     </Form>

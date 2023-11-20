@@ -46,10 +46,50 @@ form > div {
 .submit-section button {
     padding: 9px 15px;
     font-size: 14px;
-    color: white;
-    text-shadow: -1px -1px 0 #003ea1;
-    border: 1px solid #0d4aab;
-    box-shadow: inset 0 1px 0 0 #97c4fe;
-    background: linear-gradient(to top, #54a2f9 0%, #2e7be3 100%);
-    cursor: pointer;
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+
+    &:not(:disabled) {
+        cursor: pointer;
+        border: 1px solid #0d4aab;
+        box-shadow: inset 0 1px 0 0 #97c4fe;
+        text-shadow: -1px -1px 0 #003ea1;
+        color: white;
+        background: linear-gradient(to top, #54a2f9 0%, #2e7be3 100%);
+    }
+}
+
+.families-selection {
+    display: flex;
+    flex-wrap: wrap;
+    margin-block-start: 10px;
+
+    + div {
+        margin-block-start: 10px;
+    }
+
+    input {
+        display: none;
+    }
+
+    > span {
+        flex: 0 0 11em;
+        margin: 10px 0;
+    }
+
+    input:checked + label span {
+        background-color: lightgreen;
+        /*color: white;*/
+    }
+
+    label span {
+        padding: 6px 5px;
+        border: 1px solid #000;
+        border-radius: 6px;
+        box-shadow: inset 0 0 1px 1px darkgray;
+        margin-inline-end: 5px;
+        white-space: nowrap;
+    }
 }

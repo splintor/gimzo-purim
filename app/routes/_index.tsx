@@ -34,6 +34,10 @@ export default function Index() {
   const [fadiha, setFadiha] = useState('true');
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
 
+  useEffect(() => {
+    setSum(sendToAll ? 750 : 5 * selectedFamiliesCount);
+  }, [sendToAll, selectedFamiliesCount]);
+
   return (
     <Form method="post">
       <h1>

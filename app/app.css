@@ -62,9 +62,8 @@ form > div {
 }
 
 .families-selection {
-    display: flex;
-    flex-wrap: wrap;
-    margin-block-start: 10px;
+    display: grid;
+    grid-template-columns: auto auto;
 
     + div {
         margin-block-start: 10px;
@@ -75,13 +74,11 @@ form > div {
     }
 
     > span {
-        flex: 0 0 11em;
         margin: 10px 0;
     }
 
     input:checked + label span {
         background-color: lightgreen;
-        /*color: white;*/
     }
 
     label span {

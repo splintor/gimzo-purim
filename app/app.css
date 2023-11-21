@@ -73,23 +73,23 @@ form > div {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100% / 2, max(160px, 100% / 12)), 1fr));
 
-    + div {
+    & + div {
         margin-block-start: 10px;
     }
 
-    input {
+    & input {
         display: none;
     }
 
-    > span {
+    & > span {
         margin: 10px 0;
     }
 
-    input:checked + label span {
+    & input:checked + label span {
         background-color: lightgreen;
     }
 
-    label span {
+    & label span {
         padding: 6px 5px;
         border: 1px solid #000;
         border-radius: 6px;

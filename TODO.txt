@@ -1,2 +1,1 @@
-1. Copy submission logic for Google Sheet and implement it in server code (https://developers.google.com/sheets/api/samples/formatting)
-2. Add "Force update" page
+1. Add "Force update" page

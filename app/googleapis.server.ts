@@ -4,6 +4,7 @@ import { GoogleAuth } from 'google-auth-library';
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const namesSheetName = 'שמות';
 const registrationsSheetName = 'הרשמות';
+const shippingSheetName = 'משלוחים';
 const settingsSheetName = 'הגדרות';
 const namesColumnTitle = 'שם לטופס';
 
@@ -47,10 +48,96 @@ export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }:
       spreadsheetId,
       range: `${registrationsSheetName}!A:A`,
       valueInputOption: 'RAW',
-      requestBody: { values: [[new Date().toISOString(), senderName, fadiha, (names as string[]).join(','), names.length, sum]] },
+      requestBody: { values: [[new Date().toISOString(), senderName, fadiha, (names as string[]).join(','), sum]] },
     });
+    await processShipping(sheets);
   } catch (err) {
     console.error('Failed to add submission', err);
     throw err;
   }
+}
+
+interface ResultRecord {
+  name: string;
+  to: string;
+  toAll: boolean;
+  from: Map<string, boolean>; // boolean indicates if by fadiha
+  fadiha: boolean;
+  fadihaCount: number | undefined;
+}
+
+async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Promise<void> {
+  const registrationsResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${registrationsSheetName}!A:E`,
+  });
+  const registrationRows = registrationsResponse.data.values as string[][] ?? [];
+  const registrations = registrationRows.slice(1).map((row) => ({
+    name: row[1],
+    fadiha: row[2] === 'כן',
+    names: row[3],
+    sum: row[4],
+  })).filter(({ name }) => name);
+
+  const result: Record<string, ResultRecord> = {};
+  for (const registration of registrations) {
+    const existing = result[registration.name];
+    result[registration.name] = {
+      name: registration.name,
+      to: existing ? `${existing.to},${registration.names.trim()}` : registration.names.trim(),
+      toAll: existing?.toAll || !registration.names,
+      from: new Map(),
+      fadiha: registration.fadiha,
+      fadihaCount: registration.fadiha ? 0 : undefined,
+    };
+  }
+
+  for (const record of Object.values(result)) {
+    if (record.to) {
+      const toNames = new Set(record.to.split(','));
+
+      for (const toName of toNames) {
+        if (!(toName in result)) {
+          result[toName] = {
+            name: toName,
+            to: '',
+            toAll: false,
+            from: new Map(),
+            fadiha: false,
+            fadihaCount: undefined,
+          };
+        }
+        result[toName].from.set(record.name, false);
+      }
+    }
+  }
+
+  // For each record that is sent to all, add to all other records as sender
+  for (const record of Object.values(result).filter(({ toAll }) => toAll)) {
+    for (const targetRecord of Object.values(result).filter((targetRecord) => targetRecord != record)) {
+      targetRecord.from.set(record.name, false);
+    }
+  }
+
+  // for each record that has fadiha, add to all records that send to it
+  for (const record of Object.values(result).filter(({ fadiha }) => fadiha)) {
+    for (const [resultFromName] of record.from) {
+      if (!result[resultFromName].from.has(record.name)) {
+        result[resultFromName].from.set(record.name, true);
+        ++record.fadihaCount!;
+      }
+    }
+  }
+
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId,
+    range: `${shippingSheetName}!2:10000`,
+  });
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${shippingSheetName}!A:A`,
+    valueInputOption: 'RAW',
+    requestBody: { values: Object.values(result).map((record) => [record.name, record.fadihaCount, ...record.from.keys()]) },
+  });
 }

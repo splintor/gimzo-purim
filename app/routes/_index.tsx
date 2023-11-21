@@ -61,7 +61,15 @@ export default function Index() {
       }
     }
     setSum(calculatedSum);
-  }, [sendToAll, selectedFamiliesCount]);
+  }, [sendToAll, selectedFamiliesCount, fadiha, fadihaEndDate, settings]);
+
+  useEffect(() => {
+    // reset form on browser back button
+    const senderNameDropDown = document.getElementsByName('senderName')[0] as HTMLSelectElement;
+    if (!selectedName && senderNameDropDown.selectedIndex > 0) {
+      senderNameDropDown.selectedIndex = 0;
+    }
+  }, []);
 
   const endDate = new Date(`${settings['תאריך לסיום הרשמה']} ${settings['שעה לסיום הרשמה']}`);
   if (endDate < new Date()) {

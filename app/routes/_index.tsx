@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
-import { Form, useLoaderData } from '@remix-run/react';
+import { Form, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
 import { getData, saveForm } from '~/googleapis.server';
 import { sendToTelegram } from '~/telegram.server';
@@ -44,6 +44,7 @@ function getDateAndTime(dateString: string, timeString: string) {
 }
 
 export default function Index() {
+  const { state } = useNavigation();
   const { names, settings } = useLoaderData<typeof loader>();
   const [selectedName, setSelectedName] = useState('');
   const [sum, setSum] = useState(750);
@@ -179,7 +180,8 @@ export default function Index() {
           </label>
         </div>
         <div className="submit-section">
-          <button type="submit" disabled={!sendToAll && selectedFamiliesCount === 0}>שלח טופס הרשמה ועבור לדף התשלום
+          <button type="submit" disabled={!sendToAll && selectedFamiliesCount === 0 || state === 'submitting'}>
+            {state === 'submitting' ? 'שולח, נא להמתין...' : 'שלח טופס הרשמה ועבור לדף התשלום'}
           </button>
         </div>
       </>)}

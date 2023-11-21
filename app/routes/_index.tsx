@@ -31,14 +31,26 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(encodeURI(redirectLink));
 }
 
+function parseDMYDate(dateString: string) {
+  const [day, month, year] = dateString.split('/').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function getDateAndTime(dateString: string, timeString: string) {
+  const date = parseDMYDate(dateString);
+  const [hours, minutes] = timeString.split(':').map(Number);
+  date.setHours(hours, minutes);
+  return date;
+}
+
 export default function Index() {
   const { names, settings } = useLoaderData<typeof loader>();
   const [selectedName, setSelectedName] = useState('');
   const [sum, setSum] = useState(750);
   const [sendToAll, setSendToAll] = useState(true);
-  const [fadiha, setFadiha] = useState('true');
+  const [fadiha, setFadiha] = useState(true);
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
-  const fadihaEndDate = new Date(`${settings['תאריך לסיום הנחת ביטוח פדיחה']} ${settings['שעה לסיום הנחת ביטוח פדיחה']}`);
+  const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
 
   useEffect(() => {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
@@ -64,7 +76,7 @@ export default function Index() {
     }
   }, []);
 
-  const endDate = new Date(`${settings['תאריך לסיום הרשמה']} ${settings['שעה לסיום הרשמה']}`);
+  const endDate = getDateAndTime(settings['תאריך לסיום הרשמה'], settings['שעה לסיום הרשמה']);
   if (endDate < new Date()) {
     return (<div className="end-message">
       <div>
@@ -135,15 +147,15 @@ export default function Index() {
           </div>
 
           {fadihaEndDate > new Date() && selectedFamiliesCount >= Number(settings['מספר משפחות מינימלי לביטוח פדיחה']) && (
-            <div onChange={({ target }: ChangeEvent<HTMLInputElement>) => setFadiha(target.value)}>
+            <div onChange={({ target }: ChangeEvent<HTMLInputElement>) => setFadiha(target.value === 'כן')}>
               <label>ביטוח פדיחה:</label>
 
               <div className="radio-button">
-                <input type="radio" id="fadihaYes" name="fadiha" value="true" defaultChecked/>
+                <input type="radio" id="fadihaYes" name="fadiha" value="כן" defaultChecked/>
                 <label htmlFor="fadihaYes">כן, אנחנו מעוניינים בביטוח פדיחה</label>
               </div>
               <div className="radio-button">
-                <input type="radio" id="fadihaNo" name="fadiha" value="false"/>
+                <input type="radio" id="fadihaNo" name="fadiha" value="לא"/>
                 <label htmlFor="fadihaNo">לא, אין צורך בביטוח פדיחה</label>
               </div>
 

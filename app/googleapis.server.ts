@@ -40,7 +40,7 @@ export async function getData() {
   }
 }
 
-export async function saveForm({ senderName, fadiha, names = [], sum }: Record<string, string | string[]>) {
+export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }: Record<string, string | string[]>) {
   try {
     const sheets = getGoogleSheets();
     await sheets.spreadsheets.values.append({

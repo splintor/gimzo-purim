@@ -57,6 +57,16 @@ export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }:
   }
 }
 
+export async function updateShipping() {
+  try {
+    const sheets = getGoogleSheets();
+    await processShipping(sheets);
+  } catch (err) {
+    console.error('Failed to update shipping', err);
+    throw err;
+  }
+}
+
 interface ResultRecord {
   name: string;
   to: string;

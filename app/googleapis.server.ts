@@ -4,6 +4,7 @@ import { GoogleAuth } from 'google-auth-library';
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const namesSheetName = 'שמות';
 const registrationsSheetName = 'הרשמות';
+const settingsSheetName = 'הגדרות';
 const namesColumnTitle = 'שם לטופס';
 
 function getGoogleSheets() {
@@ -28,13 +29,16 @@ export async function getData() {
       range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
     });
     const names = namesValues.data.values!.map(([name]) => name as string).sort();
-    return { names };
+
+    const settingsColumns = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${settingsSheetName}!A:B` });
+    const settings = Object.fromEntries(settingsColumns.data.values as any);
+
+    return { names, settings };
   } catch (err) {
     console.error('Failed to get list of names', err);
     throw err;
   }
 }
-
 
 export async function saveForm({ senderName, fadiha, names = [], sum }: Record<string, string | string[]>) {
   try {

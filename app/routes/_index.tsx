@@ -171,7 +171,7 @@ export default function Index() {
 
         <div>
           <label> הסכום לתשלום: </label>
-          <label className={'price'}>{sum} ₪</label>
+          <label className="price">{sum} ₪</label>
         </div>
         <div>
           <label className="footer">

@@ -138,9 +138,11 @@ export default function Index() {
                  onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=names]:checked').length,
                  )}>
               {names.filter(name => name !== selectedName).map(name => (
-                <span><input type="checkbox" name="names" id={name} key={`checkbox-${name}`}
-                             value={name}/><label
-                  htmlFor={name}><span>{name}</span></label></span>))}
+                <span key={`checkbox-${name}`}>
+                  <input type="checkbox" name="names" id={name} value={name}/>
+                  <label htmlFor={name}><span>{name}</span></label>
+                </span>),
+              )}
             </div>
 
             <div>{selectedFamiliesCount === 1 ? 'משפחה אחת נבחרה' : selectedFamiliesCount > 1 ? `${selectedFamiliesCount} משפחות נבחרו` : ''}</div>

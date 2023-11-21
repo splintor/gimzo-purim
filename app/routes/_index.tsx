@@ -31,13 +31,6 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(encodeURI(redirectLink));
 }
 
-const Header = ({ currentYear }: { currentYear: string }) => (<><h1>
-  טופס משלוח מנות מושבי
-</h1>
-  <h1>
-    גמזו - {currentYear}
-  </h1></>);
-
 export default function Index() {
   const { names, settings } = useLoaderData<typeof loader>();
   const [selectedName, setSelectedName] = useState('');
@@ -66,22 +59,34 @@ export default function Index() {
   useEffect(() => {
     // reset form on browser back button
     const senderNameDropDown = document.getElementsByName('senderName')[0] as HTMLSelectElement;
-    if (!selectedName && senderNameDropDown.selectedIndex > 0) {
+    if (!selectedName && senderNameDropDown?.selectedIndex > 0) {
       senderNameDropDown.selectedIndex = 0;
     }
   }, []);
 
   const endDate = new Date(`${settings['תאריך לסיום הרשמה']} ${settings['שעה לסיום הרשמה']}`);
   if (endDate < new Date()) {
-    return (<Form method="post">
-      <Header currentYear={currentYear}/>
-      <div className="end-message">ההרשמה נגמרה לשנת {currentYear}</div>
-    </Form>);
+    return (<div className="end-message">
+      <div>
+        <svg width="96" height="96" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="48" cy="48" r="48" fill="#FFB629" fillOpacity=".25"></circle>
+          <path className="triangle"
+                d="M55.528 21.002c-2.35-4.028-7.552-5.455-11.58-3.105a9.159 9.159 0 0 0-3.105 3.105L17.935 60.693c-2.35 4.028-.923 9.23 3.105 11.58a8.407 8.407 0 0 0 4.28 1.175h45.9c4.7 0 8.475-3.776 8.475-8.475 0-1.51-.42-2.937-1.174-4.28L55.528 21.002Zm-7.3 45.649a3.366 3.366 0 0 1-3.357-3.357 3.366 3.366 0 0 1 3.357-3.356 3.366 3.366 0 0 1 3.356 3.356 3.367 3.367 0 0 1-3.356 3.357Zm3.356-15.272a3.366 3.366 0 0 1-3.356 3.356 3.366 3.366 0 0 1-3.357-3.356V31.91a3.366 3.366 0 0 1 3.357-3.357 3.366 3.366 0 0 1 3.356 3.357v19.468Z"
+                fill="#FFA217"></path>
+        </svg>
+      </div>
+      <div>ההרשמה למשלוח המנות של גמזו לשנת {currentYear} נסגרה.<br/><br/>חג שמח!</div>
+    </div>);
   }
 
   return (
     <Form method="post">
-      <Header currentYear={currentYear}/>
+      <h1>
+        טופס משלוח מנות מושבי
+      </h1>
+      <h1>
+        גמזו - {currentYear}
+      </h1>
       <div>
         <label>בחרו את שמכם מהרשימה: </label>
         <input type="hidden" name="sum" value={sum}/>

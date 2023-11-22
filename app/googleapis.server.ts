@@ -150,4 +150,70 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
     valueInputOption: 'RAW',
     requestBody: { values: Object.values(result).map((record) => [record.name, record.fadihaCount, ...record.from.keys()]) },
   });
+
+  const colorRows = [
+    {
+      values: [
+        {
+          userEnteredFormat: {
+            backgroundColor: {
+              red: 1,
+              green: 1,
+              blue: 0,
+            },
+          },
+        },
+      ],
+    },
+  ];
+
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const shippingSheetID = spreadsheet.data.sheets?.find(sheet => sheet.properties?.title === shippingSheetName)?.properties?.sheetId;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [{
+        updateCells: {
+          range: {
+            sheetId: shippingSheetID,
+            startRowIndex: 1,
+          },
+          fields: 'userEnteredFormat.backgroundColor',
+          rows: [
+            {
+              values: [
+                {
+                  userEnteredFormat: {
+                    backgroundColor: {
+                      red: 1,
+                      green: 1,
+                      blue: 1,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+        ...Object.values(result).map((record, recordIndex) =>
+          [...record.from.entries()]
+            .map(([fromName, fadiha], fromIndex) => fadiha ? {
+              updateCells: {
+                range: {
+                  sheetId: shippingSheetID,
+                  startRowIndex: recordIndex + 1,
+                  endRowIndex: recordIndex + 2,
+                  startColumnIndex: fromIndex + 2,
+                  endColumnIndex: fromIndex + 3,
+                },
+                fields: 'userEnteredFormat.backgroundColor',
+                rows: colorRows,
+              },
+            } : null as any)).flat().filter(Boolean),
+
+      ],
+    },
+  });
 }

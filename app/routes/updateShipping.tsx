@@ -1,3 +1,4 @@
+import { Form, useNavigation } from '@remix-run/react';
 import { updateShipping } from '~/googleapis.server';
 
 export async function loader() {
@@ -7,7 +8,18 @@ export async function loader() {
 }
 
 export default function UpdateShipping() {
+  const { state } = useNavigation();
+
   return <div style={{ textAlign: 'center', marginBlockStart: '20px' }}>
-    <h1>המשלוחים עודכנו בהצלחה!</h1>
+    <Form>
+      {state === 'idle' ? (
+        <div>
+          <h1>המשלוחים עודכנו בהצלחה!</h1>
+          <button type="submit">עדכן שוב</button>
+        </div>
+      ) : (
+        <h1>מעדכן משלוחים...</h1>
+      )}
+    </Form>
   </div>;
 }

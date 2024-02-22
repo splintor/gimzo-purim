@@ -5,7 +5,7 @@ import { HDate } from '@hebcal/core';
 import { getData, saveForm } from '~/googleapis.server';
 import { sendToTelegram } from '~/telegram.server';
 
-const currentYear = new HDate().renderGematriya().split(' ')[2];
+const currentYear = new HDate().renderGematriya().split(' ').at(-1);
 
 export const meta: MetaFunction = () => {
   return [

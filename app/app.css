@@ -112,3 +112,16 @@ form > div {
   font-weight: bold;
   text-align: center;
 }
+
+#families-counter {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #cff;
+  border: 1px solid #ced4da;
+  margin-top: 8px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

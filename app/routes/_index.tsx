@@ -134,6 +134,13 @@ export default function Index() {
           </div>
           <div>
             <label> לאיזה משפחות תרצו לתת? </label>
+            {selectedFamiliesCount > 0 && <div id="families-counter"><span>{
+              selectedFamiliesCount === 1
+                ? <span>משפחה <b>אחת</b> נבחרה</span>
+                : <span><b>{selectedFamiliesCount}</b> משפחות נבחרו</span>
+            }
+              <span> - הסכום לתשלום: <b>{sum} ₪</b></span>
+            </span></div>}
 
             <div className="families-selection"
                  onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=names]:checked').length,
@@ -146,7 +153,6 @@ export default function Index() {
               )}
             </div>
 
-            <div>{selectedFamiliesCount === 1 ? 'משפחה אחת נבחרה' : selectedFamiliesCount > 1 ? `${selectedFamiliesCount} משפחות נבחרו` : ''}</div>
           </div>
 
           {fadihaEndDate > new Date() && selectedFamiliesCount >= Number(settings['מספר משפחות מינימלי לביטוח פדיחה']) && (

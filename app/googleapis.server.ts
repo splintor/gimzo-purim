@@ -94,8 +94,8 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
     const existing = result[registration.name];
     result[registration.name] = {
       name: registration.name,
-      to: existing ? `${existing.to},${registration.names.trim()}` : registration.names.trim(),
-      toAll: existing?.toAll || !registration.names,
+      to: registration.names && (existing?.to ? `${existing.to},${registration.names.trim()}` : registration.names.trim()),
+      toAll: !registration.names,
       from: new Map(),
       fadiha: registration.fadiha,
       fadihaCount: registration.fadiha ? 0 : undefined,

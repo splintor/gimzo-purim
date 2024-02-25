@@ -101,7 +101,7 @@ export default function Index() {
         גמזו - {currentYear}
       </h1>
       <div>
-        <label>בחרו את שמכם מהרשימה: </label>
+        <label>שם השולח: </label>
         <input type="hidden" name="sum" value={sum}/>
         <input type="hidden" name="link"
                value={settings['קישור לתשלום'] + '?sum=' + sum + '&subscribers_name=' + selectedName + '&description=משלוח מנות מושבי'}/>

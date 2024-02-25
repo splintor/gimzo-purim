@@ -199,7 +199,7 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
       },
         ...Object.values(result).map((record, recordIndex) =>
           [...record.from.entries()]
-            .map(([fromName, fadiha], fromIndex) => fadiha ? {
+            .map(([, fadiha], fromIndex) => fadiha ? {
               updateCells: {
                 range: {
                   sheetId: shippingSheetID,

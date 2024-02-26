@@ -75,6 +75,13 @@ export default function Index() {
     if (!selectedName && senderNameDropDown?.selectedIndex > 0) {
       senderNameDropDown.selectedIndex = 0;
     }
+
+    const storedName = window.localStorage?.getItem('senderName');
+    const storedNameIndex = storedName && names.indexOf(storedName);
+    if (storedNameIndex) {
+      setSelectedName(storedName);
+      senderNameDropDown.selectedIndex = storedNameIndex + 1;
+    }
   }, []);
 
   const endDate = getDateAndTime(settings['תאריך לסיום הרשמה'], settings['שעה לסיום הרשמה']);
@@ -109,6 +116,7 @@ export default function Index() {
           const option = (event.target as HTMLSelectElement)?.selectedOptions[0];
           const name = option.id === '-1' ? '' : option.label;
           setSelectedName(name);
+          window.localStorage?.setItem('senderName', name);
         }}>
           <option id="-1">-- יש לבחור שם --</option>
           {names.map((name, index) => <option key={index}>{name}</option>)}

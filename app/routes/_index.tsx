@@ -1,10 +1,12 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
 import { Form, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
 import { UAParser } from 'ua-parser-js';
 import { getData, saveForm } from '~/googleapis.server';
 import { sendToTelegram } from '~/telegram.server';
+import { SearchSVG } from '~/SearchSVG';
+import { CloseSVG } from '~/CloseSVG';
 
 const currentYear = new HDate().renderGematriya().split(' ').at(-1);
 
@@ -57,6 +59,9 @@ export default function Index() {
   const [sum, setSum] = useState(750);
   const [sendToAll, setSendToAll] = useState(true);
   const [fadiha, setFadiha] = useState(true);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchString, setSeacrhString] = useState<string>();
+  const searchRef = useRef<HTMLInputElement>();
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
 
@@ -106,6 +111,23 @@ export default function Index() {
     </div>);
   }
 
+  function showSearchElement(event: MouseEvent) {
+    event.preventDefault();
+    setShowSearch(true);
+    setTimeout(() => searchRef.current?.focus(), 10);
+  }
+
+  function hideSearchElement(event: MouseEvent) {
+    event.preventDefault();
+    setShowSearch(false);
+  }
+
+  function onSearchKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      setShowSearch(false);
+    }
+  }
+
   return (
     <Form method="post">
       <h1>
@@ -148,19 +170,37 @@ export default function Index() {
             <label>ביטוח פדיחה זמין רק למי שבחר {settings['מספר משפחות מינימלי לביטוח פדיחה']} משפחות או יותר.</label>
           </div>
           <div>
-            <label> לאיזה משפחות תרצו לתת? </label>
-            {selectedFamiliesCount > 0 && <div id="families-counter"><span>{
-              selectedFamiliesCount === 1
-                ? <span>משפחה <b>אחת</b> נבחרה</span>
-                : <span><b>{selectedFamiliesCount}</b> משפחות נבחרו</span>
-            }
-              <span> - הסכום לתשלום: <b>{sum} ₪</b></span>
-            </span></div>}
+            <div className="families-label">
+              <label> לאיזה משפחות תרצו לתת? </label>
+              {!showSearch && selectedFamiliesCount === 0 && <a href="#" onClick={showSearchElement}><SearchSVG/></a>}
+            </div>
+            {(selectedFamiliesCount > 0 || showSearch) && <div id="banner">
+              {selectedFamiliesCount > 0 &&
+                 <div id="families-counter">
+                 <span>{
+                   selectedFamiliesCount === 1
+                     ? <span>משפחה <b>אחת</b> נבחרה</span>
+                     : <span><b>{selectedFamiliesCount}</b> משפחות נבחרו</span>
+                 }
+                   <span> - הסכום לתשלום: <b>{sum} ₪</b></span>
+                 </span>)
+                   {!showSearch && <a href="#" onClick={showSearchElement}><SearchSVG/></a>}
+                 </div>}
+              {showSearch && <div id="families-search"><span>
+                  <input placeholder="חיפוש משפחות" value={searchString}
+                         ref={searchRef}
+                         onInput={e => setSeacrhString(e.currentTarget.value)}
+                         onKeyDown={onSearchKeyDown}
+                  />
+                </span>
+                <a href="#" onClick={hideSearchElement}><CloseSVG/></a>
+              </div>}
+            </div>}
 
             <div className="families-selection"
                  onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=names]:checked').length,
                  )}>
-              {names.filter(name => name !== selectedName).map(name => (
+              {names.filter(name => name !== selectedName && (!searchString || !showSearch || name.includes(searchString))).map(name => (
                 <span key={`checkbox-${name}`}>
                   <input type="checkbox" name="names" id={name} value={name}/>
                   <label htmlFor={name}><span>{name}</span></label>

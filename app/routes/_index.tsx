@@ -61,7 +61,7 @@ export default function Index() {
   const [fadiha, setFadiha] = useState(true);
   const [showSearch, setShowSearch] = useState(false);
   const [searchString, setSeacrhString] = useState<string>();
-  const searchRef = useRef<HTMLInputElement>();
+  const searchRef = useRef<HTMLInputElement>(null);
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
 
@@ -202,7 +202,8 @@ export default function Index() {
                  )}>
               {names.filter(name => name !== selectedName && (!searchString || !showSearch || name.includes(searchString))).map(name => (
                 <span key={`checkbox-${name}`}>
-                  <input type="checkbox" name="names" id={name} value={name}/>
+                  <input type="checkbox" name="names" id={name} value={name}
+                         onClick={() => setTimeout(() => searchRef.current?.focus(), 10)}/>
                   <label htmlFor={name}><span>{name}</span></label>
                 </span>),
               )}

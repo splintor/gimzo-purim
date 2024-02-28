@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
 import { Form, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
+import { UAParser } from 'ua-parser-js';
 import { getData, saveForm } from '~/googleapis.server';
 import { sendToTelegram } from '~/telegram.server';
 
@@ -21,6 +22,12 @@ export async function loader() {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const params = Object.fromEntries(formData) as Record<string, string | string[]>;
+  const userAgent = new UAParser(request.headers.get('User-Agent') as string).getResult();
+  Object.entries(userAgent).forEach(([key, value]) => {
+    if (value && JSON.stringify(value) !== '{}') {
+      params[key] = JSON.stringify(value);
+    }
+  });
   if (params.names) {
     params.names = formData.getAll('names').map(name => name.toString());
   }

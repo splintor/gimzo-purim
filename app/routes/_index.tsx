@@ -1,9 +1,9 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
-import { Form, useLoaderData, useNavigation } from '@remix-run/react';
+import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
 import { UAParser } from 'ua-parser-js';
-import { getData, saveForm } from '~/googleapis.server';
+import { getData } from '~/googleapis.server';
 import { sendToTelegram } from '~/telegram.server';
 import { SearchSVG } from '~/SearchSVG';
 import { CloseSVG } from '~/CloseSVG';
@@ -17,8 +17,8 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader() {
-  return await getData();
+export function loader() {
+  return getData();
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -33,7 +33,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (params.names) {
     params.names = formData.getAll('names').map(name => name.toString());
   }
-  await saveForm(params);
+  // await saveForm(params);
   const redirectLink = params.link as string;
   delete params.link;
   await sendToTelegram('Form was submitted with params: ' + JSON.stringify(params));
@@ -52,6 +52,18 @@ function getDateAndTime(dateString: string, timeString: string) {
   return date;
 }
 
+function debounce(func: (...args: any[]) => void, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
 export default function Index() {
   const { state } = useNavigation();
   const { names, settings } = useLoaderData<typeof loader>();
@@ -60,10 +72,16 @@ export default function Index() {
   const [sendToAll, setSendToAll] = useState(true);
   const [fadiha, setFadiha] = useState(true);
   const [showSearch, setShowSearch] = useState(false);
-  const [searchString, setSeacrhString] = useState<string>();
+  const [searchString, setSearchString] = useState<string>();
   const searchRef = useRef<HTMLInputElement>(null);
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
+  const fetcher = useFetcher({ key: 'logger' });
+
+  const onInputChanged = debounce(e => {
+    setSearchString(e.currentTarget.value);
+    sendToLog(`${selectedName} חיפש את "${e.currentTarget.value}"`);
+  }, 500);
 
   useEffect(() => {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
@@ -111,20 +129,33 @@ export default function Index() {
     </div>);
   }
 
+  function sendToLog(message: string) {
+    fetcher.submit({
+      message,
+    }, {
+      action: '/logger',
+      method: 'POST',
+    });
+
+  }
+
   function showSearchElement(event: MouseEvent) {
     event.preventDefault();
     setShowSearch(true);
     setTimeout(() => searchRef.current?.focus(), 10);
+    sendToLog(`${selectedName} הציג חיפוש`);
   }
 
-  function hideSearchElement(event: MouseEvent) {
-    event.preventDefault();
+  function hideSearchElement(event?: MouseEvent) {
+    event?.preventDefault();
     setShowSearch(false);
+    sendToLog(`${selectedName} הסתיר חיפוש`);
   }
 
   function onSearchKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       setShowSearch(false);
+      sendToLog(`${selectedName} הסתיר חיפוש בלחיצה על אסקייפ`);
     }
   }
 
@@ -189,7 +220,7 @@ export default function Index() {
               {showSearch && <div id="families-search"><span>
                   <input placeholder="חיפוש משפחות" value={searchString}
                          ref={searchRef}
-                         onInput={e => setSeacrhString(e.currentTarget.value)}
+                         onInput={onInputChanged}
                          onKeyDown={onSearchKeyDown}
                   />
                 </span>

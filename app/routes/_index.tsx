@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
 import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
@@ -52,18 +52,6 @@ function getDateAndTime(dateString: string, timeString: string) {
   return date;
 }
 
-function debounce(func: (...args: any[]) => void, wait: number) {
-  let timeout: NodeJS.Timeout;
-  return function executedFunction(...args: any[]) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
 export default function Index() {
   const { state } = useNavigation();
   const { names, settings } = useLoaderData<typeof loader>();
@@ -77,11 +65,6 @@ export default function Index() {
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
   const fetcher = useFetcher({ key: 'logger' });
-
-  const onInputChanged = debounce(e => {
-    setSearchString(e.currentTarget.value);
-    sendToLog(`${selectedName} חיפש את "${e.currentTarget.value}"`);
-  }, 500);
 
   useEffect(() => {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
@@ -220,7 +203,10 @@ export default function Index() {
               {showSearch && <div id="families-search"><span>
                   <input placeholder="חיפוש משפחות" value={searchString}
                          ref={searchRef}
-                         onInput={onInputChanged}
+                         onInput={e => {
+                           setSearchString(e.currentTarget.value);
+                           sendToLog(`${selectedName} חיפש את "${e.currentTarget.value}"`);
+                         }}
                          onKeyDown={onSearchKeyDown}
                   />
                 </span>

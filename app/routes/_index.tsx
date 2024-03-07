@@ -33,7 +33,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (params.names) {
     params.names = formData.getAll('names').map(name => name.toString());
   }
-  // await saveForm(params);
+  await saveForm(params);
   const redirectLink = params.link as string;
   delete params.link;
   await sendToTelegram('Form was submitted with params: ' + JSON.stringify(params));

@@ -148,7 +148,11 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
     spreadsheetId,
     range: `${shippingSheetName}!A:A`,
     valueInputOption: 'RAW',
-    requestBody: { values: Object.values(result).map((record) => [record.name, record.fadihaCount, ...record.from.keys()]) },
+    requestBody: {
+      values: Object.values(result)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((record) => [record.name, record.fadihaCount, ...record.from.keys()]),
+    },
   });
 
   const colorRows = [

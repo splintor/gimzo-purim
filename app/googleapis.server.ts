@@ -72,6 +72,7 @@ interface ResultRecord {
   to: string;
   toAll: boolean;
   from: Map<string, boolean>; // boolean indicates if by fadiha
+  sortedFrom?: [string, boolean][]; // boolean indicates if by fadiha
   fadiha: boolean;
   fadihaCount: number | undefined;
 }
@@ -122,15 +123,19 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
     }
   }
 
+  const records = Object.values(result);
+
   // For each record that is sent to all, add to all other records as sender
-  for (const record of Object.values(result).filter(({ toAll }) => toAll)) {
-    for (const targetRecord of Object.values(result).filter((targetRecord) => targetRecord != record)) {
-      targetRecord.from.set(record.name, false);
+  for (const record of records.filter(({ toAll }) => toAll)) {
+    for (const targetRecord of records) {
+      if (targetRecord != record) {
+        targetRecord.from.set(record.name, false);
+      }
     }
   }
 
   // for each record that has fadiha, add to all records that send to it
-  for (const record of Object.values(result).filter(({ fadiha }) => fadiha)) {
+  for (const record of records.filter(({ fadiha }) => fadiha)) {
     for (const [resultFromName] of record.from) {
       if (!result[resultFromName].from.has(record.name)) {
         result[resultFromName].from.set(record.name, true);
@@ -138,6 +143,10 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
       }
     }
   }
+
+  // update sortedFrom field
+  records.forEach(record =>
+    record.sortedFrom = [...record.from.entries()].sort(([a], [b]) => a.localeCompare(b)));
 
   await sheets.spreadsheets.values.clear({
     spreadsheetId,
@@ -149,9 +158,9 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
     range: `${shippingSheetName}!A:A`,
     valueInputOption: 'RAW',
     requestBody: {
-      values: Object.values(result)
+      values: records
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((record) => [record.name, record.fadihaCount, ...record.from.keys()]),
+        .map((record) => [record.name, record.fadihaCount, ...record.sortedFrom!.map(([name]) => name)]),
     },
   });
 
@@ -201,8 +210,8 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
           ],
         },
       },
-        ...Object.values(result).map((record, recordIndex) =>
-          [...record.from.entries()]
+        ...records.map((record, recordIndex) =>
+          record.sortedFrom!
             .map(([, fadiha], fromIndex) => fadiha ? {
               updateCells: {
                 range: {

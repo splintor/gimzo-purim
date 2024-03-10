@@ -50,6 +50,10 @@ form > div {
   gap: 10px;
 }
 
+.families-note {
+  margin-top: 6px;
+}
+
 .fadiha-cost, .fadiha-gain {
   margin-block-start: 10px;
 }
@@ -109,6 +113,11 @@ form > div {
     margin-inline-end: 5px;
     white-space: nowrap;
     cursor: pointer;
+
+    &.previously-selected {
+      background-color: #E0ee2020;
+      border-style: dashed;
+    }
   }
 
   &:empty:before {

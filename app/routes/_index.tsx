@@ -1,4 +1,4 @@
-import { type ChangeEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
 import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
@@ -61,6 +61,9 @@ export default function Index() {
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
   const fetcher = useFetcher({ key: 'logger' });
+  const [previouslySelectedNames, setPreviouslySelectedNames] = useState<Set<string>>();
+  const [previouslySelectedDate, setPreviouslySelectedDate] = useState<Date>();
+  const [showPreviouslySelected, setShowPreviouslySelected] = useState(false);
 
   useEffect(() => {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
@@ -91,6 +94,11 @@ export default function Index() {
       setSelectedName(storedName);
       senderNameDropDown.selectedIndex = storedNameIndex + 1;
     }
+  }, []);
+
+  useEffect(() => {
+    setPreviouslySelectedNames(new Set(window.localStorage?.getItem('names')?.split(',').filter(Boolean) || []));
+    setPreviouslySelectedDate(new Date(window.localStorage?.getItem('names-date') ?? new Date()));
   }, []);
 
   const endDate = getDateAndTime(settings['תאריך לסיום הרשמה'], settings['שעה לסיום הרשמה']);
@@ -138,8 +146,18 @@ export default function Index() {
     }
   }
 
+  function handleSubmit(e: FormEvent) {
+    window.localStorage?.setItem('names', new FormData(e.target as HTMLFormElement).getAll('names').join(','));
+    window.localStorage?.setItem('names-date', new Date().toISOString());
+  }
+
+  function toggleShowPreviousSelected(e: MouseEvent) {
+    e.preventDefault();
+    setShowPreviouslySelected(!showPreviouslySelected);
+  }
+
   return (
-    <Form method="post">
+    <Form method="post" onSubmit={handleSubmit}>
       <h1>
         טופס משלוח מנות מושבי
       </h1>
@@ -184,6 +202,14 @@ export default function Index() {
               <label> לאיזה משפחות תרצו לתת? </label>
               {!showSearch && selectedFamiliesCount === 0 && <a href="#" onClick={showSearchElement}><SearchSVG/></a>}
             </div>
+            {previouslySelectedNames?.size! > 0 &&
+               <div className="families-note"><a href="#"
+                                                 onClick={toggleShowPreviousSelected}>
+                 {showPreviouslySelected ? 'הסתר' : 'הצג'}
+                 {' '}את הבחירה{' '}
+                 {(previouslySelectedDate?.getFullYear() as number) < (new Date().getFullYear()) ? 'שלי משנה שעברה' : 'הקודמת שלי'}</a>
+               </div>}
+
             {(selectedFamiliesCount > 0 || showSearch) && <div id="banner">
               {selectedFamiliesCount > 0 &&
                  <div id="families-counter">
@@ -193,7 +219,7 @@ export default function Index() {
                      : <span><b>{selectedFamiliesCount}</b> משפחות נבחרו</span>
                  }
                    <span> - הסכום לתשלום: <b>{sum} ₪</b></span>
-                 </span>)
+                 </span>
                    {!showSearch && <a href="#" onClick={showSearchElement}><SearchSVG/></a>}
                  </div>}
               {showSearch && <div id="families-search"><span>
@@ -217,7 +243,8 @@ export default function Index() {
                 <span key={`checkbox-${name}`}>
                   <input type="checkbox" name="names" id={name} value={name}
                          onClick={() => setTimeout(() => searchRef.current?.focus(), 10)}/>
-                  <label htmlFor={name}><span>{name}</span></label>
+                  <label htmlFor={name}><span
+                    className={showPreviouslySelected && previouslySelectedNames?.has(name) ? 'previously-selected' : ''}>{name}</span></label>
                 </span>),
               )}
             </div>

@@ -24,12 +24,8 @@ export function loader() {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const params = Object.fromEntries(formData) as Record<string, string | string[]>;
-  const userAgent = new UAParser(request.headers.get('User-Agent') as string).getResult();
-  Object.entries(userAgent).forEach(([key, value]) => {
-    if (value && JSON.stringify(value) !== '{}') {
-      params[key] = JSON.stringify(value);
-    }
-  });
+  const { browser, os, device } = new UAParser(request.headers.get('User-Agent') as string).getResult();
+  params.browser = `${browser.name} (${os.name}, ${device.model})`;
   if (params.names) {
     params.names = formData.getAll('names').map(name => name.toString());
   }

@@ -43,6 +43,11 @@ export async function getData() {
 
 export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }: Record<string, string | string[]>) {
   try {
+    if (process.env.DO_NOT_SAVE_TO_WORKSHEET) {
+      console.log('Note: DO_NOT_SAVE_TO_WORKSHEET env var is set to true - skipping saving to worksheet.');
+      return;
+    }
+
     const sheets = getGoogleSheets();
     await sheets.spreadsheets.values.append({
       spreadsheetId,

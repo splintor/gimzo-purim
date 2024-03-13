@@ -60,6 +60,8 @@ export default function Index() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [selectedFamiliesCount, setSelectedFamiliesCount] = useState(0);
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
+  const fadihaCost = Number(settings['עלות ביטוח פדיחה']);
+  const minimumForFadiha = Number(settings['מספר משפחות מינימלי לביטוח פדיחה']);
   const fetcher = useFetcher({ key: 'logger' });
   const [previouslySelectedNames, setPreviouslySelectedNames] = useState<Set<string>>();
   const [previouslySelectedDate, setPreviouslySelectedDate] = useState<Date>();
@@ -74,8 +76,8 @@ export default function Index() {
         calculatedSum *= 1 - eval(settings['הנחת כמות'].replace('%', '/100'));
       }
 
-      if (fadiha && new Date() > fadihaEndDate) {
-        calculatedSum += Number(settings['עלות ביטוח פדיחה']);
+      if (fadiha && new Date() > fadihaEndDate && selectedFamiliesCount >= minimumForFadiha) {
+        calculatedSum += fadihaCost;
       }
     }
     setSum(calculatedSum);
@@ -195,7 +197,7 @@ export default function Index() {
 
         {!sendToAll && (<>
           <div className="fadiha-promise">
-            <label>ביטוח פדיחה זמין רק למי שבחר {settings['מספר משפחות מינימלי לביטוח פדיחה']} משפחות או יותר.</label>
+            <label>ביטוח פדיחה זמין רק למי שבחר {minimumForFadiha} משפחות או יותר.</label>
           </div>
           <div>
             <div className="families-label">
@@ -251,7 +253,7 @@ export default function Index() {
 
           </div>
 
-          {fadihaEndDate > new Date() && selectedFamiliesCount >= Number(settings['מספר משפחות מינימלי לביטוח פדיחה']) && (
+          {selectedFamiliesCount >= minimumForFadiha && (
             <div onChange={({ target }: ChangeEvent<HTMLInputElement>) => setFadiha(target.value === 'כן')}>
               <label>ביטוח פדיחה:</label>
 
@@ -266,7 +268,7 @@ export default function Index() {
 
               {fadiha ? new Date() > fadihaEndDate ?
                 <div className="fadiha-cost">משנכנס אדר, סימון ביטוח פדיחה מוסיף אוטומטית עוד
-                  ₪{settings['עלות ביטוח פדיחה']} לסכום
+                  ₪{fadihaCost} לסכום
                   התשלום.</div> : <div className="fadiha-gain">הרווחת ביטוח פדיחה חינם... כל הכבוד...</div> : null}
             </div>
           )}

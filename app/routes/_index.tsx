@@ -92,7 +92,7 @@ export default function Index() {
 
     const storedName = window.localStorage?.getItem('senderName');
     const storedNameIndex = storedName && names.indexOf(storedName);
-    if (storedNameIndex) {
+    if (senderNameDropDown && storedNameIndex) {
       setSelectedName(storedName);
       senderNameDropDown.selectedIndex = storedNameIndex + 1;
     }

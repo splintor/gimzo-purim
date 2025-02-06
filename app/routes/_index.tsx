@@ -179,7 +179,7 @@ export default function Index() {
           setSelectedName(name);
           window.localStorage?.setItem('senderName', name);
         }}>
-          <option id="-1">-- יש לבחור את השם שלך מהרשימה הנפתחת מטה --</option>
+          <option id="-1">-- לחצו כאן לבחירת השם שלכם מתוך הרשימה --</option>
           {names.map((name, index) => <option key={index}>{name}</option>)}
         </select>
       </div>

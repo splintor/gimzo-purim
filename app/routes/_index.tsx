@@ -38,7 +38,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
 function parseDMYDate(dateString: string) {
   const [day, month, year] = dateString.split('/').map(Number);
-  return new Date(year, month - 1, day);
+  const currentCentury = Math.floor(new Date().getFullYear() / 100) * 100;
+  const yearToUse = year < 100 ? year + currentCentury : year;
+  return new Date(yearToUse, month - 1, day);
 }
 
 function getDateAndTime(dateString: string, timeString: string) {

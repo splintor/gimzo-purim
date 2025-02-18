@@ -3,10 +3,15 @@ import { GoogleAuth } from 'google-auth-library';
 
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const namesSheetName = 'שמות';
+const lastYearSheetName = 'אשתקד';
 const registrationsSheetName = 'הרשמות';
 const shippingSheetName = 'משלוחים';
 const settingsSheetName = 'הגדרות';
 const namesColumnTitle = 'שם לטופס';
+const nameColumnTitle = 'שם';
+const fadihaColumnTitle = 'ביטוח פדיחה';
+const familiesColumnTitle = 'משפחות';
+const linkColumnTitle = 'קישור';
 
 function getGoogleSheets() {
   const auth = new GoogleAuth({
@@ -20,7 +25,15 @@ function getGoogleSheets() {
   return google.sheets({ version: 'v4', auth });
 }
 
-export async function getData() {
+function getValueByColumnName(row: string[] | undefined, columns: string[], columnName: string) {
+  if (!row) {
+    return null;
+  }
+  const index = columns.indexOf(columnName);
+  return index >= 0 ? row[index] : null;
+}
+
+export async function getData(initialValuesHash: string | null) {
   try {
     const sheets = getGoogleSheets();
     const namesSheetTitles = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!1:1` });
@@ -29,12 +42,39 @@ export async function getData() {
       spreadsheetId,
       range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
     });
-    const names = namesValues.data.values!.map(([name]) => name as string).sort();
+    const names = namesValues.data.values!.map<string>(([name]) => name).sort();
 
     const settingsColumns = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${settingsSheetName}!A:B` });
     const settings = Object.fromEntries(settingsColumns.data.values as any);
+    let initialValues: { name: string, fadiha: boolean, families: string[] } | undefined;
 
-    return { names, settings };
+    if (initialValuesHash) {
+      const lastYearNamesSheetTitlesResponse = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: `${lastYearSheetName}!1:1`,
+      });
+      const lastYearNamesSheetTitles = lastYearNamesSheetTitlesResponse.data.values?.[0] ?? [];
+      const linkIndex = 1 + lastYearNamesSheetTitles.findIndex((title: string) => title === linkColumnTitle)!;
+      const links = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: `${lastYearSheetName}!R2C${linkIndex}:C${linkIndex}`,
+      });
+
+      const linkRow = 2 + links.data.values!.findIndex(([link]: string[]) => link?.endsWith(initialValuesHash));
+      const initialValuesRowResponse = linkRow >= 2 ? await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: `${lastYearSheetName}!${linkRow}:${linkRow}`,
+      }) : null;
+
+      const initialValuesRow = initialValuesRowResponse?.data.values?.[0];
+
+      const name = getValueByColumnName(initialValuesRow, lastYearNamesSheetTitles, nameColumnTitle)!;
+      const fadiha = getValueByColumnName(initialValuesRow, lastYearNamesSheetTitles, fadihaColumnTitle) === 'כן';
+      const families = getValueByColumnName(initialValuesRow, lastYearNamesSheetTitles, familiesColumnTitle)?.split(',').filter(Boolean) ?? [];
+      initialValues = { name, fadiha, families };
+    }
+
+    return { names, settings, initialValues };
   } catch (err) {
     console.error('Failed to get list of names', err);
     throw err;

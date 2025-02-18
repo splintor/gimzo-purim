@@ -7,9 +7,11 @@ import { getData, saveForm } from '~/googleapis.server';
 import { sendToTelegram } from '~/telegram.server';
 import { SearchSVG } from '~/SearchSVG';
 import { CloseSVG } from '~/CloseSVG';
+import { DataFunctionArgs } from '@remix-run/server-runtime/dist/routeModules';
 
 const currentYear = new HDate().renderGematriya().split(' ').at(-1);
 
+// noinspection JSUnusedGlobalSymbols
 export const meta: MetaFunction = () => {
   return [
     { title: `טופס משלוח מנות מושבי - גמזו - ${currentYear}` },
@@ -17,10 +19,10 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export function loader() {
-  return getData();
-}
+export const loader = ({ request }: DataFunctionArgs) =>
+  getData(new URLSearchParams(new URL(request.url).search).get('t'));
 
+// noinspection JSUnusedGlobalSymbols
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const params = Object.fromEntries(formData) as Record<string, string | string[]>;
@@ -52,7 +54,7 @@ function getDateAndTime(dateString: string, timeString: string) {
 
 export default function Index() {
   const { state } = useNavigation();
-  const { names, settings } = useLoaderData<typeof loader>();
+  const { names, settings, initialValues } = useLoaderData<typeof loader>();
   const [selectedName, setSelectedName] = useState('');
   const [sum, setSum] = useState(750);
   const [sendToAll, setSendToAll] = useState(true);
@@ -92,13 +94,42 @@ export default function Index() {
       senderNameDropDown.selectedIndex = 0;
     }
 
-    const storedName = window.localStorage?.getItem('senderName');
-    const storedNameIndex = storedName && names.indexOf(storedName);
-    if (senderNameDropDown && storedNameIndex) {
-      setSelectedName(storedName);
-      senderNameDropDown.selectedIndex = storedNameIndex + 1;
+    function selectName(name: string | null) {
+      const storedNameIndex = name && names.indexOf(name);
+      if (senderNameDropDown && storedNameIndex) {
+        setSelectedName(name);
+        senderNameDropDown.selectedIndex = storedNameIndex + 1;
+      }
     }
-  }, []);
+
+    if (initialValues) {
+      selectName(initialValues.name);
+      if (initialValues.families.length) {
+        setSendToAll(false);
+        setTimeout(() => {
+          (document.getElementById('sendToSpecific') as HTMLInputElement).checked = true;
+          initialValues.families.forEach(family => {
+            const f = document.getElementById(family) as HTMLInputElement;
+            if (f) {
+              setTimeout(() => {
+                if (!f.checked) {
+                  f.click();
+                }
+              });
+            } else {
+              console.warn('Cannot find family to select:', family);
+            }
+          });
+        }, 200);
+      }
+
+      if (!initialValues.fadiha) {
+        setTimeout(() => document.getElementById('fadihaNo')?.click(), 2000);
+      }
+    } else {
+      selectName(window.localStorage?.getItem('senderName'));
+    }
+  }, [initialValues]);
 
   useEffect(() => {
     setPreviouslySelectedNames(new Set(window.localStorage?.getItem('names')?.split(',').filter(Boolean) || []));
@@ -252,7 +283,6 @@ export default function Index() {
                 </span>),
               )}
             </div>
-
           </div>
 
           {selectedFamiliesCount >= minimumForFadiha && (

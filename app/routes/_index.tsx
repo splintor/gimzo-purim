@@ -74,6 +74,12 @@ export default function Index() {
   const notFoundFamilies = Object.keys(notFoundFamiliesObject);
 
   useEffect(() => {
+    if (sendToAll) {
+      setSelectedFamiliesCount(0);
+    }
+  }, [sendToAll]);
+
+  useEffect(() => {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
     if (!sendToAll) {
       calculatedSum = settings['עלות הזמנה למשפחה'] * selectedFamiliesCount;

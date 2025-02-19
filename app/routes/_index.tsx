@@ -70,6 +70,8 @@ export default function Index() {
   const [previouslySelectedNames, setPreviouslySelectedNames] = useState<Set<string>>();
   const [previouslySelectedDate, setPreviouslySelectedDate] = useState<Date>();
   const [showPreviouslySelected, setShowPreviouslySelected] = useState(false);
+  const [notFoundFamiliesObject, setNotFoundFamiliesObject] = useState<Record<string, boolean>>({});
+  const notFoundFamilies = Object.keys(notFoundFamiliesObject);
 
   useEffect(() => {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
@@ -117,7 +119,7 @@ export default function Index() {
                 }
               });
             } else {
-              console.warn('Cannot find family to select:', family);
+              setNotFoundFamiliesObject(l => ({ ...l, [family]: true }));
             }
           });
         }, 200);
@@ -248,13 +250,13 @@ export default function Index() {
             {(selectedFamiliesCount > 0 || showSearch) && <div id="banner">
               {selectedFamiliesCount > 0 &&
                  <div id="families-counter">
-                 <span>{
-                   selectedFamiliesCount === 1
-                     ? <span>משפחה <b>אחת</b> נבחרה</span>
-                     : <span><b>{selectedFamiliesCount}</b> משפחות נבחרו</span>
-                 }
-                   <span> - הסכום לתשלום: <b>{sum} ₪</b></span>
-                 </span>
+                   <span>{
+                     selectedFamiliesCount === 1
+                       ? <span>משפחה <b>אחת</b> נבחרה</span>
+                       : <span><b>{selectedFamiliesCount}</b> משפחות נבחרו</span>
+                   }
+                     <span> - הסכום לתשלום: <b>{sum} ₪</b></span>
+                   </span>
                    {!showSearch && <a href="#" onClick={showSearchElement}><SearchSVG/></a>}
                  </div>}
               {showSearch && <div id="families-search"><span>
@@ -270,6 +272,13 @@ export default function Index() {
                 <a href="#" onClick={hideSearchElement}><CloseSVG/></a>
               </div>}
             </div>}
+
+            {notFoundFamilies.length > 0 &&
+               <div id="families-not-found">
+                   <span>לא הצלחתי למצוא את {notFoundFamilies.length === 1 ? 'המשפחה הבאה' : notFoundFamilies.length + ' המשפחות הבאות'}: {notFoundFamilies.map((f, i) =>
+                     <span>{i > 0 ? ', ' : ''}<span
+                       className="not-found">{f}</span></span>)}</span>
+               </div>}
 
             <div className="families-selection"
                  onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=names]:checked').length,

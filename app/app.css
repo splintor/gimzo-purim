@@ -157,6 +157,17 @@ form > div {
   }
 }
 
+#families-not-found {
+  margin-block: 10px;
+  padding: 10px;
+  background-color: #ffc;
+  border: 1px solid #ced4da;
+
+  .not-found {
+    font-weight: bold;
+  }
+}
+
 #families-search {
   background-color: #ffc;
   border: 1px solid #ced4da;

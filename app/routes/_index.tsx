@@ -76,6 +76,7 @@ export default function Index() {
   useEffect(() => {
     if (sendToAll) {
       setSelectedFamiliesCount(0);
+      setNotFoundFamiliesObject({});
     }
   }, [sendToAll]);
 

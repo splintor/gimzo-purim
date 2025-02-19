@@ -115,7 +115,7 @@ export default function Index() {
       if (initialValues.families.length) {
         setSendToAll(false);
         setTimeout(() => {
-          (document.getElementById('sendToSpecific') as HTMLInputElement).checked = true;
+          (document.getElementById('sendToSpecific') as HTMLInputElement).click();
           initialValues.families.forEach(family => {
             const f = document.getElementById(family) as HTMLInputElement;
             if (f) {

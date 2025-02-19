@@ -149,10 +149,11 @@ form > div {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-left: 40px;
 
   & > a {
     position: absolute;
-    left: 30px;
+    left: 15px;
   }
 }
 

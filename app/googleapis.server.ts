@@ -1,5 +1,6 @@
 import google from '@googleapis/sheets';
 import { GoogleAuth } from 'google-auth-library';
+import { sendToTelegram } from '~/telegram.server';
 
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const namesSheetName = 'שמות';
@@ -77,6 +78,7 @@ export async function getData(initialValuesHash: string | null) {
     return { names, settings, initialValues };
   } catch (err) {
     console.error('Failed to get list of names', err);
+    await sendToTelegram(`Failed to get list of names: ${err}`);
     throw err;
   }
 }
@@ -98,6 +100,7 @@ export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }:
     await processShipping(sheets);
   } catch (err) {
     console.error('Failed to add submission', err);
+    await sendToTelegram(`Failed to add submission for ${senderName} with names (${names}): ${err}`);
     throw err;
   }
 }
@@ -108,6 +111,7 @@ export async function updateShipping() {
     await processShipping(sheets);
   } catch (err) {
     console.error('Failed to update shipping', err);
+    await sendToTelegram(`Failed to update shipping: ${err}`);
     throw err;
   }
 }

@@ -131,6 +131,13 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
     spreadsheetId,
     range: `${registrationsSheetName}!A:E`,
   });
+  const namesSheetTitles = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!1:1` });
+  const formNameIndex = 1 + namesSheetTitles.data.values?.[0].findIndex((title: string) => title === namesColumnTitle)!;
+  const namesValues = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
+  });
+  const namesSet = new Set(namesValues.data.values!.map<string>(([name]) => name));
   const registrationRows = registrationsResponse.data.values as string[][] ?? [];
   const registrations = registrationRows.slice(1).map((row) => ({
     name: row[1],
@@ -158,6 +165,9 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
 
       for (const toName of toNames) {
         if (!(toName in result)) {
+          if (!namesSet.has(toName)) {
+            await sendToTelegram(`Unknown name in registration of ${record.name}: ${toName}`);
+          }
           result[toName] = {
             name: toName,
             to: '',

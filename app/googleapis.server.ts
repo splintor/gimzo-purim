@@ -150,7 +150,7 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
 
   for (const record of Object.values(result)) {
     if (record.to) {
-      const toNames = new Set(record.to.split(','));
+      const toNames = new Set(record.to.split(',').map(s => s.trim()));
 
       for (const toName of toNames) {
         if (!(toName in result)) {

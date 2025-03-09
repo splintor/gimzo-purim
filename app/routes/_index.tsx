@@ -24,18 +24,24 @@ export const loader = ({ request }: DataFunctionArgs) =>
 
 // noinspection JSUnusedGlobalSymbols
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const params = Object.fromEntries(formData) as Record<string, string | string[]>;
-  const { browser, os, device } = new UAParser(request.headers.get('User-Agent') as string).getResult();
-  params.browser = `${browser.name} (${os.name}, ${device.model})`;
-  if (params.names) {
-    params.names = formData.getAll('names').map(name => name.toString());
+  let params: Record<string, string | string[]> | undefined;
+
+  try {
+    const formData = await request.formData();
+    params = Object.fromEntries(formData) as Record<string, string | string[]>;
+    const { browser, os, device } = new UAParser(request.headers.get('User-Agent') as string).getResult();
+    params.browser = `${browser.name} (${os.name}, ${device.model})`;
+    if (params.names) {
+      params.names = formData.getAll('names').map(name => name.toString());
+    }
+    await saveForm(params);
+    const redirectLink = params.link as string;
+    delete params.link;
+    void sendToTelegram(`Form was submitted with params: ${JSON.stringify(params)}`);
+    return redirect(encodeURI(redirectLink));
+  } catch (error) {
+    await sendToTelegram(`At error occurred while submitting request for ${params?.senderName}: ${error}`);
   }
-  await saveForm(params);
-  const redirectLink = params.link as string;
-  delete params.link;
-  await sendToTelegram('Form was submitted with params: ' + JSON.stringify(params));
-  return redirect(encodeURI(redirectLink));
 }
 
 function parseDMYDate(dateString: string) {

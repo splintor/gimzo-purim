@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await saveForm(params);
     const redirectLink = params.link as string;
     delete params.link;
-    void sendToTelegram(`Form was submitted with params: ${JSON.stringify(params)}`);
+    await sendToTelegram(`Form was submitted with params: ${JSON.stringify(params)}`);
     return redirect(encodeURI(redirectLink));
   } catch (error) {
     await sendToTelegram(`At error occurred while submitting request for ${params?.senderName}: ${error}`);

@@ -97,7 +97,7 @@ export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }:
       valueInputOption: 'RAW',
       requestBody: { values: [[new Date().toISOString(), senderName, fadiha, (names as string[]).join(','), sum]] },
     });
-    await processShipping(sheets);
+    void processShipping(sheets);
   } catch (err) {
     console.error('Failed to add submission', err);
     await sendToTelegram(`Failed to add submission for ${senderName} with names (${names}): ${err}`);

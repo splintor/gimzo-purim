@@ -127,171 +127,165 @@ interface ResultRecord {
 }
 
 async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Promise<void> {
-  try {
-    const registrationsResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${registrationsSheetName}!A:E`,
-    });
-    const namesSheetTitles = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!1:1` });
-    const formNameIndex = 1 + namesSheetTitles.data.values?.[0].findIndex((title: string) => title === namesColumnTitle)!;
-    const namesValues = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
-    });
-    const namesSet = new Set(namesValues.data.values!.map<string>(([name]) => name));
-    const registrationRows = registrationsResponse.data.values as string[][] ?? [];
-    const registrations = registrationRows.slice(1).map((row) => ({
-      name: row[1],
-      fadiha: row[2] === 'כן',
-      names: row[3],
-      sum: row[4],
-    })).filter(({ name }) => name);
+  const registrationsResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${registrationsSheetName}!A:E`,
+  });
+  const namesSheetTitles = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!1:1` });
+  const formNameIndex = 1 + namesSheetTitles.data.values?.[0].findIndex((title: string) => title === namesColumnTitle)!;
+  const namesValues = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
+  });
+  const namesSet = new Set(namesValues.data.values!.map<string>(([name]) => name));
+  const registrationRows = registrationsResponse.data.values as string[][] ?? [];
+  const registrations = registrationRows.slice(1).map((row) => ({
+    name: row[1],
+    fadiha: row[2] === 'כן',
+    names: row[3],
+    sum: row[4],
+  })).filter(({ name }) => name);
 
-    const result: Record<string, ResultRecord> = {};
-    for (const registration of registrations) {
-      const existing = result[registration.name];
-      result[registration.name] = {
-        name: registration.name,
-        to: registration.names && (existing?.to ? `${existing.to},${registration.names.trim()}` : registration.names.trim()),
-        toAll: !registration.names,
-        from: new Map(),
-        fadiha: registration.fadiha,
-        fadihaCount: registration.fadiha ? 0 : undefined,
-      };
-    }
+  const result: Record<string, ResultRecord> = {};
+  for (const registration of registrations) {
+    const existing = result[registration.name];
+    result[registration.name] = {
+      name: registration.name,
+      to: registration.names && (existing?.to ? `${existing.to},${registration.names.trim()}` : registration.names.trim()),
+      toAll: !registration.names,
+      from: new Map(),
+      fadiha: registration.fadiha,
+      fadihaCount: registration.fadiha ? 0 : undefined,
+    };
+  }
 
-    for (const record of Object.values(result)) {
-      if (record.to) {
-        const toNames = new Set(record.to.split(',').map(s => s.trim()));
+  for (const record of Object.values(result)) {
+    if (record.to) {
+      const toNames = new Set(record.to.split(',').map(s => s.trim()));
 
-        for (const toName of toNames) {
-          if (!(toName in result)) {
-            if (!namesSet.has(toName)) {
-              await sendToTelegram(`Unknown name in registration of ${record.name}: ${toName}`);
-            }
-            result[toName] = {
-              name: toName,
-              to: '',
-              toAll: false,
-              from: new Map(),
-              fadiha: false,
-              fadihaCount: undefined,
-            };
+      for (const toName of toNames) {
+        if (!(toName in result)) {
+          if (!namesSet.has(toName)) {
+            await sendToTelegram(`Unknown name in registration of ${record.name}: ${toName}`);
           }
-          result[toName].from.set(record.name, false);
+          result[toName] = {
+            name: toName,
+            to: '',
+            toAll: false,
+            from: new Map(),
+            fadiha: false,
+            fadihaCount: undefined,
+          };
         }
+        result[toName].from.set(record.name, false);
       }
     }
+  }
 
-    const records = Object.values(result);
+  const records = Object.values(result);
 
-    // For each record that is sent to all, add to all other records as sender
-    for (const record of records.filter(({ toAll }) => toAll)) {
-      for (const targetRecord of records) {
-        if (targetRecord != record) {
-          targetRecord.from.set(record.name, false);
-        }
+  // For each record that is sent to all, add to all other records as sender
+  for (const record of records.filter(({ toAll }) => toAll)) {
+    for (const targetRecord of records) {
+      if (targetRecord != record) {
+        targetRecord.from.set(record.name, false);
       }
     }
+  }
 
-    // for each record that has fadiha, add to all records that send to it
-    for (const record of records.filter(({ fadiha }) => fadiha)) {
-      for (const [resultFromName] of record.from) {
-        if (!result[resultFromName].from.has(record.name)) {
-          result[resultFromName].from.set(record.name, true);
-          ++record.fadihaCount!;
-        }
+  // for each record that has fadiha, add to all records that send to it
+  for (const record of records.filter(({ fadiha }) => fadiha)) {
+    for (const [resultFromName] of record.from) {
+      if (!result[resultFromName].from.has(record.name)) {
+        result[resultFromName].from.set(record.name, true);
+        ++record.fadihaCount!;
       }
     }
+  }
 
-    // update sortedFrom field
-    records.forEach(record =>
-      record.sortedFrom = [...record.from.entries()].sort(([a], [b]) => a.localeCompare(b)));
+  // update sortedFrom field
+  records.forEach(record =>
+    record.sortedFrom = [...record.from.entries()].sort(([a], [b]) => a.localeCompare(b)));
 
-    await sheets.spreadsheets.values.clear({
-      spreadsheetId,
-      range: `${shippingSheetName}!2:10000`,
-    });
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId,
+    range: `${shippingSheetName}!2:10000`,
+  });
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: `${shippingSheetName}!A:A`,
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: records
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((record) => [record.name, record.fadihaCount, ...record.sortedFrom!.map(([name]) => name)]),
-      },
-    });
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${shippingSheetName}!A:A`,
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: records
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((record) => [record.name, record.fadihaCount, ...record.sortedFrom!.map(([name]) => name)]),
+    },
+  });
 
-    const colorRows = [
-      {
-        values: [
-          {
-            userEnteredFormat: {
-              backgroundColor: {
-                red: 1,
-                green: 1,
-                blue: 0,
-              },
+  const colorRows = [
+    {
+      values: [
+        {
+          userEnteredFormat: {
+            backgroundColor: {
+              red: 1,
+              green: 1,
+              blue: 0,
             },
-          },
-        ],
-      },
-    ];
-
-    const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
-    const shippingSheetID = spreadsheet.data.sheets?.find(sheet => sheet.properties?.title === shippingSheetName)?.properties?.sheetId;
-
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId,
-      requestBody: {
-        requests: [{
-          updateCells: {
-            range: {
-              sheetId: shippingSheetID,
-              startRowIndex: 1,
-            },
-            fields: 'userEnteredFormat.backgroundColor',
-            rows: [
-              {
-                values: [
-                  {
-                    userEnteredFormat: {
-                      backgroundColor: {
-                        red: 1,
-                        green: 1,
-                        blue: 1,
-                      },
-                    },
-                  },
-                ],
-              },
-            ],
           },
         },
-          ...records.map((record, recordIndex) =>
-            record.sortedFrom!
-              .map(([, fadiha], fromIndex) => fadiha ? {
-                updateCells: {
-                  range: {
-                    sheetId: shippingSheetID,
-                    startRowIndex: recordIndex + 1,
-                    endRowIndex: recordIndex + 2,
-                    startColumnIndex: fromIndex + 2,
-                    endColumnIndex: fromIndex + 3,
-                  },
-                  fields: 'userEnteredFormat.backgroundColor',
-                  rows: colorRows,
-                },
-              } : null as any)).flat().filter(Boolean),
+      ],
+    },
+  ];
 
-        ],
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const shippingSheetID = spreadsheet.data.sheets?.find(sheet => sheet.properties?.title === shippingSheetName)?.properties?.sheetId;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [{
+        updateCells: {
+          range: {
+            sheetId: shippingSheetID,
+            startRowIndex: 1,
+          },
+          fields: 'userEnteredFormat.backgroundColor',
+          rows: [
+            {
+              values: [
+                {
+                  userEnteredFormat: {
+                    backgroundColor: {
+                      red: 1,
+                      green: 1,
+                      blue: 1,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
       },
-    });
-  } catch (err) {
-    console.error('Failed to process shipping', err);
-    await sendToTelegram(`Failed to process shipping: ${err}`);
-    throw err;
-  }
+        ...records.map((record, recordIndex) =>
+          record.sortedFrom!
+            .map(([, fadiha], fromIndex) => fadiha ? {
+              updateCells: {
+                range: {
+                  sheetId: shippingSheetID,
+                  startRowIndex: recordIndex + 1,
+                  endRowIndex: recordIndex + 2,
+                  startColumnIndex: fromIndex + 2,
+                  endColumnIndex: fromIndex + 3,
+                },
+                fields: 'userEnteredFormat.backgroundColor',
+                rows: colorRows,
+              },
+            } : null as any)).flat().filter(Boolean),
+
+      ],
+    },
+  });
 }

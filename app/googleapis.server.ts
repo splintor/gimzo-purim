@@ -95,7 +95,7 @@ export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }:
       spreadsheetId,
       range: `${registrationsSheetName}!A:A`,
       valueInputOption: 'RAW',
-      requestBody: { values: [[new Date().toISOString(), senderName, fadiha, (names as string[]).join(','), sum]] },
+      requestBody: { values: [[new Date().toISOString(), senderName, fadiha, (names as string[]).join(','), Number(sum)]] },
     });
     void processShipping(sheets);
   } catch (err) {

@@ -126,6 +126,15 @@ interface ResultRecord {
   fadihaCount: number | undefined;
 }
 
+const createEmptyResultRecord = (name: string): ResultRecord => ({
+  name,
+  to: '',
+  toAll: false,
+  from: new Map(),
+  fadiha: false,
+  fadihaCount: undefined,
+});
+
 async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Promise<void> {
   try {
     const registrationsResponse = await sheets.spreadsheets.values.get({
@@ -138,7 +147,8 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
       spreadsheetId,
       range: `${namesSheetName}!R2C${formNameIndex}:C${formNameIndex}`,
     });
-    const namesSet = new Set(namesValues.data.values!.map<string>(([name]) => name));
+    const namesFromSheet = namesValues.data.values!.map<string>(([name]) => name);
+    const namesSet = new Set(namesFromSheet);
     const registrationRows = registrationsResponse.data.values as string[][] ?? [];
     const registrations = registrationRows.slice(1).map((row) => ({
       name: row[1],
@@ -169,30 +179,25 @@ async function processShipping(sheets: ReturnType<typeof getGoogleSheets>): Prom
             if (!namesSet.has(toName)) {
               await sendToTelegram(`Unknown name in registration of ${record.name}: ${toName}`);
             }
-            result[toName] = {
-              name: toName,
-              to: '',
-              toAll: false,
-              from: new Map(),
-              fadiha: false,
-              fadihaCount: undefined,
-            };
+            result[toName] = createEmptyResultRecord(toName);
           }
           result[toName].from.set(record.name, false);
         }
       }
     }
 
-    const records = Object.values(result);
-
-    // For each record that is sent to all, add to all other records as sender
-    for (const record of records.filter(({ toAll }) => toAll)) {
-      for (const targetRecord of records) {
-        if (targetRecord != record) {
-          targetRecord.from.set(record.name, false);
+    // For each record that is sent to all, add as sender to every name from the names sheet (except self)
+    for (const record of Object.values(result).filter(({ toAll }) => toAll)) {
+      for (const targetName of namesFromSheet) {
+        if (targetName === record.name) continue;
+        if (!(targetName in result)) {
+          result[targetName] = createEmptyResultRecord(targetName);
         }
+        result[targetName].from.set(record.name, false);
       }
     }
+
+    const records = Object.values(result);
 
     // for each record that has fadiha, add to all records that send to it
     for (const record of records.filter(({ fadiha }) => fadiha)) {

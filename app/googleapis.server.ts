@@ -4,7 +4,7 @@ import { sendToTelegram } from '~/telegram.server';
 
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 const namesSheetName = 'שמות';
-const lastYearSheetName = 'אשתקד';
+const lastYearSheetName = new Date().getFullYear() - 1;
 const registrationsSheetName = 'הרשמות';
 const shippingSheetName = 'משלוחים';
 const settingsSheetName = 'הגדרות';

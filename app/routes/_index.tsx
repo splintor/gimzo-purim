@@ -4,6 +4,7 @@ import { DataFunctionArgs } from '@remix-run/server-runtime/dist/routeModules';
 import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
 import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
+import { calculateSum, getDateAndTime } from '~/calculateSum';
 import { CloseSVG } from '~/CloseSVG';
 import { getData, getSettings, saveForm } from '~/googleapis.server';
 import { SearchSVG } from '~/SearchSVG';
@@ -41,19 +42,12 @@ export async function action({ request }: ActionFunctionArgs) {
     const names = params.names as string[] | undefined;
     const sendToAll = !names || names.length === 0;
 
-    let validatedSum: number;
-    if (sendToAll) {
-      validatedSum = Number(settings['עלות הזמנה לכל המושב']);
-    } else {
-      validatedSum = Number(settings['עלות הזמנה למשפחה']) * names.length;
-      if (names.length >= Number(settings['מספר משפחות מינימלי להנחת כמות'])) {
-        validatedSum *= 1 - eval(settings['הנחת כמות'].replace('%', '/100'));
-      }
-      const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
-      if (params.fadiha === 'כן' && new Date() > fadihaEndDate && names.length >= Number(settings['מספר משפחות מינימלי לביטוח פדיחה'])) {
-        validatedSum += Number(settings['עלות ביטוח פדיחה']);
-      }
-    }
+    const validatedSum = calculateSum({
+      sendToAll,
+      familiesCount: sendToAll ? 0 : names!.length,
+      fadiha: params.fadiha === 'כן',
+      settings,
+    });
 
     if (clientSum !== validatedSum) {
       await sendToTelegram(`⚠️ Price mismatch for ${params.senderName}: client sent ${clientSum}, server calculated ${validatedSum} (${sendToAll ? 'all families' : names!.length + ' families'}). Using server-calculated price.`);
@@ -71,20 +65,6 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     await sendToTelegram(`At error occurred while submitting request for ${params?.senderName}: ${error}`);
   }
-}
-
-function parseDMYDate(dateString: string) {
-  const [day, month, year] = dateString.split('/').map(Number);
-  const currentCentury = Math.floor(new Date().getFullYear() / 100) * 100;
-  const yearToUse = year < 100 ? year + currentCentury : year;
-  return new Date(yearToUse, month - 1, day);
-}
-
-function getDateAndTime(dateString: string, timeString: string) {
-  const date = parseDMYDate(dateString);
-  const [hours, minutes] = timeString.split(':').map(Number);
-  date.setHours(hours, minutes);
-  return date;
 }
 
 export default function Index() {
@@ -114,24 +94,7 @@ export default function Index() {
     }
   }, [sendToAll]);
 
-  function calculateSum() {
-    let calculatedSum = settings['עלות הזמנה לכל המושב'];
-    if (!sendToAll) {
-      calculatedSum = settings['עלות הזמנה למשפחה'] * selectedFamiliesCount;
-
-      if (selectedFamiliesCount >= Number(settings['מספר משפחות מינימלי להנחת כמות'])) {
-        calculatedSum *= 1 - eval(settings['הנחת כמות'].replace('%', '/100'));
-      }
-
-      if (fadiha && new Date() > fadihaEndDate && selectedFamiliesCount >= minimumForFadiha) {
-        calculatedSum += fadihaCost;
-      }
-    }
-
-    return calculatedSum;
-  }
-
-  const sum = calculateSum();
+  const sum = calculateSum({ sendToAll, familiesCount: selectedFamiliesCount, fadiha, settings });
 
   useEffect(() => {
     // reset form on browser back button

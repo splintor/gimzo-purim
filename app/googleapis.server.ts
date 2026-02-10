@@ -15,6 +15,16 @@ const familiesColumnTitle = 'משפחות';
 const linkColumnTitle = 'קישור';
 
 function getGoogleSheets() {
+  if (!process.env.GOOGLE_PRIVATE_KEY) {
+    throw new Error('GOOGLE_PRIVATE_KEY environment variable is required');
+  }
+  if (!process.env.GOOGLE_CLIENT_EMAIL) {
+    throw new Error('GOOGLE_CLIENT_EMAIL environment variable is required');
+  }
+  if (!process.env.GOOGLE_SHEET_ID) {
+    throw new Error('GOOGLE_SHEET_ID environment variable is required');
+  }
+
   const auth = new GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,

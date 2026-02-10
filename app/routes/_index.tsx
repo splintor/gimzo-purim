@@ -1,13 +1,13 @@
-import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
-import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
-import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
 import { HDate } from '@hebcal/core';
-import { UAParser } from 'ua-parser-js';
-import { getData, saveForm } from '~/googleapis.server';
-import { sendToTelegram } from '~/telegram.server';
-import { SearchSVG } from '~/SearchSVG';
-import { CloseSVG } from '~/CloseSVG';
+import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
 import { DataFunctionArgs } from '@remix-run/server-runtime/dist/routeModules';
+import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
+import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
+import { UAParser } from 'ua-parser-js';
+import { CloseSVG } from '~/CloseSVG';
+import { getData, getSettings, saveForm } from '~/googleapis.server';
+import { SearchSVG } from '~/SearchSVG';
+import { sendToTelegram } from '~/telegram.server';
 
 const currentYear = new HDate().renderGematriya().split(' ').at(-1);
 
@@ -34,6 +34,38 @@ export async function action({ request }: ActionFunctionArgs) {
     if (params.names) {
       params.names = formData.getAll('names').map(name => name.toString());
     }
+
+    // Server-side price validation: recalculate sum from settings
+    const settings = await getSettings();
+    const clientSum = Number(params.sum);
+    const names = params.names as string[] | undefined;
+    const sendToAll = !names || names.length === 0;
+
+    let validatedSum: number;
+    if (sendToAll) {
+      validatedSum = Number(settings['עלות הזמנה לכל המושב']);
+    } else {
+      validatedSum = Number(settings['עלות הזמנה למשפחה']) * names.length;
+      if (names.length >= Number(settings['מספר משפחות מינימלי להנחת כמות'])) {
+        validatedSum *= 1 - eval(settings['הנחת כמות'].replace('%', '/100'));
+      }
+      const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);
+      if (params.fadiha === 'כן' && new Date() > fadihaEndDate && names.length >= Number(settings['מספר משפחות מינימלי לביטוח פדיחה'])) {
+        validatedSum += Number(settings['עלות ביטוח פדיחה']);
+      }
+    }
+
+    if (clientSum !== validatedSum) {
+      await sendToTelegram(`⚠️ Price mismatch for ${params.senderName}: client sent ${clientSum}, server calculated ${validatedSum} (${sendToAll ? 'all families' : names!.length + ' families'}). Using server-calculated price.`);
+    }
+
+    params.sum = String(validatedSum);
+
+    // Fix the payment link with the validated sum
+    const redirectUrl = new URL(params.link as string);
+    redirectUrl.searchParams.set('sum', String(validatedSum));
+    params.link = redirectUrl.toString();
+
     await saveForm(params);
     const redirectLink = params.link as string;
     delete params.link;
@@ -62,7 +94,6 @@ export default function Index() {
   const { state } = useNavigation();
   const { names, settings, initialValues } = useLoaderData<typeof loader>();
   const [selectedName, setSelectedName] = useState('');
-  const [sum, setSum] = useState(750);
   const [sendToAll, setSendToAll] = useState(true);
   const [fadiha, setFadiha] = useState(true);
   const [showSearch, setShowSearch] = useState(false);
@@ -86,7 +117,7 @@ export default function Index() {
     }
   }, [sendToAll]);
 
-  useEffect(() => {
+  function calculateSum() {
     let calculatedSum = settings['עלות הזמנה לכל המושב'];
     if (!sendToAll) {
       calculatedSum = settings['עלות הזמנה למשפחה'] * selectedFamiliesCount;
@@ -99,8 +130,11 @@ export default function Index() {
         calculatedSum += fadihaCost;
       }
     }
-    setSum(calculatedSum);
-  }, [sendToAll, selectedFamiliesCount, fadiha, fadihaEndDate, settings]);
+
+    return calculatedSum;
+  }
+
+  const sum = calculateSum();
 
   useEffect(() => {
     // reset form on browser back button

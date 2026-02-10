@@ -34,6 +34,12 @@ function getValueByColumnName(row: string[] | undefined, columns: string[], colu
   return index >= 0 ? row[index] : null;
 }
 
+export async function getSettings() {
+  const sheets = getGoogleSheets();
+  const settingsColumns = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${settingsSheetName}!A:B` });
+  return Object.fromEntries(settingsColumns.data.values as any);
+}
+
 export async function getData(initialValuesHash: string | null) {
   try {
     const sheets = getGoogleSheets();
@@ -45,8 +51,7 @@ export async function getData(initialValuesHash: string | null) {
     });
     const names = namesValues.data.values!.map<string>(([name]) => name).sort();
 
-    const settingsColumns = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${settingsSheetName}!A:B` });
-    const settings = Object.fromEntries(settingsColumns.data.values as any);
+    const settings = await getSettings();
     let initialValues: { name: string, fadiha: boolean, families: string[] } | undefined;
 
     if (initialValuesHash) {

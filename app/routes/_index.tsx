@@ -61,10 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     params.sum = String(validatedSum);
 
-    // Fix the payment link with the validated sum
-    const redirectUrl = new URL(params.link as string);
-    redirectUrl.searchParams.set('sum', String(validatedSum));
-    params.link = redirectUrl.toString();
+    params.link = (params.link as string).replace(/([?&]sum=)\d+/, `$1${validatedSum}`);
 
     await saveForm(params);
     const redirectLink = params.link as string;

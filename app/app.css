@@ -324,6 +324,19 @@ form > div {
   margin-bottom: 4px;
 }
 
+.nm-card-index {
+  display: inline-block;
+  background: #dee2e6;
+  color: #495057;
+  border-radius: 4px;
+  padding: 0 6px;
+  margin-inline-end: 8px;
+  font-size: 12px;
+  font-weight: normal;
+  min-width: 20px;
+  text-align: center;
+}
+
 .nm-card-details {
   display: flex;
   gap: 15px;

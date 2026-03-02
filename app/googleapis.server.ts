@@ -138,6 +138,7 @@ export async function getNamesData() {
 
   return rows.map((row, index) => ({
     rowIndex: index + 2,
+    index: row[0] ?? '',
     family: row[1] ?? '',
     husband: row[2] ?? '',
     wife: row[3] ?? '',

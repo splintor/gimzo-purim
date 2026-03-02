@@ -185,7 +185,7 @@ export default function NameManagement() {
 
             return (
               <div key={fam.rowIndex} className="nm-card">
-                <div className="nm-card-display-name">{fam.displayName}</div>
+                <div className="nm-card-display-name"><span className="nm-card-index">{fam.index}</span>{fam.displayName}</div>
                 <div className="nm-card-details">
                   <span>משפחה: {fam.family}</span>
                   <span>בעל: {fam.husband}</span>

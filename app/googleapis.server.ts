@@ -100,28 +100,19 @@ export async function getData(initialValuesHash: string | null) {
 
 export async function getNamesData() {
   const sheets = getGoogleSheets();
-  const headerResponse = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: `${namesSheetName}!1:1`,
-  });
-  const headers = headerResponse.data.values?.[0] ?? [];
-  const familyCol = headers.indexOf('משפחה');
-  const husbandCol = headers.indexOf('בעל');
-  const wifeCol = headers.indexOf('אשה');
-  const displayNameCol = headers.indexOf(namesColumnTitle);
-
+  // Column A = index, B = משפחה, C = בעל, D = אשה, J = שם לטופס (computed)
   const dataResponse = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${namesSheetName}!A2:D`,
+    range: `${namesSheetName}!A2:J`,
   });
   const rows = dataResponse.data.values ?? [];
 
   return rows.map((row, index) => ({
     rowIndex: index + 2,
-    family: row[familyCol] ?? '',
-    husband: row[husbandCol] ?? '',
-    wife: row[wifeCol] ?? '',
-    displayName: row[displayNameCol] ?? '',
+    family: row[1] ?? '',
+    husband: row[2] ?? '',
+    wife: row[3] ?? '',
+    displayName: row[9] ?? '',
   }));
 }
 
@@ -129,7 +120,7 @@ export async function addFamily(family: string, husband: string, wife: string) {
   const sheets = getGoogleSheets();
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `${namesSheetName}!A:A`,
+    range: `${namesSheetName}!B:B`,
     valueInputOption: 'RAW',
     requestBody: { values: [[family, husband, wife]] },
   });
@@ -139,7 +130,7 @@ export async function updateFamily(rowIndex: number, expectedFamily: string, fam
   const sheets = getGoogleSheets();
   const currentRow = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${namesSheetName}!A${rowIndex}:A${rowIndex}`,
+    range: `${namesSheetName}!B${rowIndex}:B${rowIndex}`,
   });
   const currentFamily = currentRow.data.values?.[0]?.[0] ?? '';
   if (currentFamily !== expectedFamily) {
@@ -147,7 +138,7 @@ export async function updateFamily(rowIndex: number, expectedFamily: string, fam
   }
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${namesSheetName}!A${rowIndex}:C${rowIndex}`,
+    range: `${namesSheetName}!B${rowIndex}:D${rowIndex}`,
     valueInputOption: 'RAW',
     requestBody: { values: [[family, husband, wife]] },
   });
@@ -157,7 +148,7 @@ export async function deleteFamily(rowIndex: number, expectedFamily: string) {
   const sheets = getGoogleSheets();
   const currentRow = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${namesSheetName}!A${rowIndex}:A${rowIndex}`,
+    range: `${namesSheetName}!B${rowIndex}:B${rowIndex}`,
   });
   const currentFamily = currentRow.data.values?.[0]?.[0] ?? '';
   if (currentFamily !== expectedFamily) {

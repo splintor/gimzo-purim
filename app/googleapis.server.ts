@@ -98,6 +98,35 @@ export async function getData(initialValuesHash: string | null) {
   }
 }
 
+async function sortNamesSheet(sheets: ReturnType<typeof getGoogleSheets>) {
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const namesSheetId = spreadsheet.data.sheets?.find(
+    (sheet) => sheet.properties?.title === namesSheetName,
+  )?.properties?.sheetId;
+  // Sort rows 2+ by column J (index 9) — the שם לטופס computed column
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          sortRange: {
+            range: {
+              sheetId: namesSheetId,
+              startRowIndex: 1, // skip header row
+            },
+            sortSpecs: [
+              {
+                dimensionIndex: 9, // column J (0-based)
+                sortOrder: 'ASCENDING',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  });
+}
+
 export async function getNamesData() {
   const sheets = getGoogleSheets();
   // Column A = index, B = משפחה, C = בעל, D = אשה, J = שם לטופס (computed)
@@ -124,6 +153,7 @@ export async function addFamily(family: string, husband: string, wife: string) {
     valueInputOption: 'RAW',
     requestBody: { values: [[family, husband, wife]] },
   });
+  await sortNamesSheet(sheets);
 }
 
 export async function updateFamily(rowIndex: number, expectedFamily: string, family: string, husband: string, wife: string) {
@@ -142,6 +172,7 @@ export async function updateFamily(rowIndex: number, expectedFamily: string, fam
     valueInputOption: 'RAW',
     requestBody: { values: [[family, husband, wife]] },
   });
+  await sortNamesSheet(sheets);
 }
 
 export async function deleteFamily(rowIndex: number, expectedFamily: string) {

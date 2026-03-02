@@ -99,31 +99,28 @@ export async function getData(initialValuesHash: string | null) {
 }
 
 async function sortNamesSheet(sheets: ReturnType<typeof getGoogleSheets>) {
-  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
-  const namesSheetId = spreadsheet.data.sheets?.find(
-    (sheet) => sheet.properties?.title === namesSheetName,
-  )?.properties?.sheetId;
-  // Sort rows 2+ by column J (index 9) — the שם לטופס computed column
-  await sheets.spreadsheets.batchUpdate({
+  // Read columns B:D (editable data) and J (computed display name) to sort by
+  const [dataResponse, displayResponse] = await Promise.all([
+    sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!B2:D` }),
+    sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!J2:J` }),
+  ]);
+  const dataRows = dataResponse.data.values ?? [];
+  const displayRows = displayResponse.data.values ?? [];
+
+  // Pair each data row with its display name, then sort
+  const paired = dataRows.map((row, i) => ({
+    data: row,
+    displayName: displayRows[i]?.[0] ?? '',
+  }));
+  paired.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+  // Write back only columns B:D (preserving column A indices and E+ formulas)
+  const lastRow = dataRows.length + 1; // +1 because data starts at row 2
+  await sheets.spreadsheets.values.update({
     spreadsheetId,
-    requestBody: {
-      requests: [
-        {
-          sortRange: {
-            range: {
-              sheetId: namesSheetId,
-              startRowIndex: 1, // skip header row
-            },
-            sortSpecs: [
-              {
-                dimensionIndex: 9, // column J (0-based)
-                sortOrder: 'ASCENDING',
-              },
-            ],
-          },
-        },
-      ],
-    },
+    range: `${namesSheetName}!B2:D${lastRow}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: paired.map((p) => p.data) },
   });
 }
 

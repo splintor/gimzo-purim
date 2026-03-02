@@ -145,14 +145,20 @@ export async function getNamesData() {
 
 export async function addFamily(family: string, husband: string, wife: string) {
   const sheets = getGoogleSheets();
-  await sheets.spreadsheets.values.append({
+  // Find the next empty row by counting existing data in column B
+  const colB = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range: `${namesSheetName}!B:B`,
+  });
+  const nextRow = (colB.data.values?.length ?? 1) + 1;
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `${namesSheetName}!B${nextRow}:D${nextRow}`,
     valueInputOption: 'RAW',
     requestBody: { values: [[family, husband, wife]] },
   });
   await sortNamesSheet(sheets);
-  await sendToTelegram(`➕ משפחה חדשה נוספה: משפחת ${family} (בעל: ${husband}, אשה: ${wife})`);
+  void sendToTelegram(`משפחה חדשה נוספה: משפחת ${family}, בעל: ${husband}, אשה: ${wife}`);
 }
 
 export async function updateFamily(rowIndex: number, expectedFamily: string, family: string, husband: string, wife: string) {
@@ -172,7 +178,7 @@ export async function updateFamily(rowIndex: number, expectedFamily: string, fam
     requestBody: { values: [[family, husband, wife]] },
   });
   await sortNamesSheet(sheets);
-  await sendToTelegram(`✏️ משפחה עודכנה: ${expectedFamily} ← משפחת ${family} (בעל: ${husband}, אשה: ${wife})`);
+  void sendToTelegram(`משפחה עודכנה: ${expectedFamily} -> משפחת ${family}, בעל: ${husband}, אשה: ${wife}`);
 }
 
 export async function deleteFamily(rowIndex: number, expectedFamily: string) {
@@ -206,7 +212,7 @@ export async function deleteFamily(rowIndex: number, expectedFamily: string) {
       ],
     },
   });
-  await sendToTelegram(`🗑️ משפחה נמחקה: ${expectedFamily}`);
+  void sendToTelegram(`משפחה נמחקה: ${expectedFamily}`);
 }
 
 export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }: Record<string, string | string[]>) {

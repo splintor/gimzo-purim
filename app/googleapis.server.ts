@@ -98,6 +98,94 @@ export async function getData(initialValuesHash: string | null) {
   }
 }
 
+export async function getNamesData() {
+  const sheets = getGoogleSheets();
+  const headerResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!1:1`,
+  });
+  const headers = headerResponse.data.values?.[0] ?? [];
+  const familyCol = headers.indexOf('משפחה');
+  const husbandCol = headers.indexOf('בעל');
+  const wifeCol = headers.indexOf('אשה');
+  const displayNameCol = headers.indexOf(namesColumnTitle);
+
+  const dataResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!A2:D`,
+  });
+  const rows = dataResponse.data.values ?? [];
+
+  return rows.map((row, index) => ({
+    rowIndex: index + 2,
+    family: row[familyCol] ?? '',
+    husband: row[husbandCol] ?? '',
+    wife: row[wifeCol] ?? '',
+    displayName: row[displayNameCol] ?? '',
+  }));
+}
+
+export async function addFamily(family: string, husband: string, wife: string) {
+  const sheets = getGoogleSheets();
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${namesSheetName}!A:A`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[family, husband, wife]] },
+  });
+}
+
+export async function updateFamily(rowIndex: number, expectedFamily: string, family: string, husband: string, wife: string) {
+  const sheets = getGoogleSheets();
+  const currentRow = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!A${rowIndex}:A${rowIndex}`,
+  });
+  const currentFamily = currentRow.data.values?.[0]?.[0] ?? '';
+  if (currentFamily !== expectedFamily) {
+    throw new Error(`Row ${rowIndex} has family "${currentFamily}" but expected "${expectedFamily}". The sheet may have been modified.`);
+  }
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `${namesSheetName}!A${rowIndex}:C${rowIndex}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[family, husband, wife]] },
+  });
+}
+
+export async function deleteFamily(rowIndex: number, expectedFamily: string) {
+  const sheets = getGoogleSheets();
+  const currentRow = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!A${rowIndex}:A${rowIndex}`,
+  });
+  const currentFamily = currentRow.data.values?.[0]?.[0] ?? '';
+  if (currentFamily !== expectedFamily) {
+    throw new Error(`Row ${rowIndex} has family "${currentFamily}" but expected "${expectedFamily}". The sheet may have been modified.`);
+  }
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const namesSheetId = spreadsheet.data.sheets?.find(
+    (sheet) => sheet.properties?.title === namesSheetName,
+  )?.properties?.sheetId;
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          deleteDimension: {
+            range: {
+              sheetId: namesSheetId,
+              dimension: 'ROWS',
+              startIndex: rowIndex - 1,
+              endIndex: rowIndex,
+            },
+          },
+        },
+      ],
+    },
+  });
+}
+
 export async function saveForm({ senderName, fadiha = 'לא', names = [], sum }: Record<string, string | string[]>) {
   try {
     if (process.env.DO_NOT_SAVE_TO_WORKSHEET) {

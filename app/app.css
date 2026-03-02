@@ -188,3 +188,172 @@ form > div {
     width: 100%;
   }
 }
+
+/* Name Management page */
+
+.name-management {
+  max-width: 50vw;
+  margin: 0 auto;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .name-management {
+    max-width: 100vw;
+    padding: 0 10px;
+  }
+}
+
+.nm-info-box {
+  background-color: #e8f4fd;
+  border: 1px solid #b3d7f0;
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+.nm-info-box summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.nm-info-box ol {
+  padding-inline-start: 20px;
+}
+
+.nm-add-section {
+  margin-bottom: 20px;
+}
+
+.nm-add-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nm-input {
+  padding: 6px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.nm-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #f8f9fa;
+}
+
+.nm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.nm-btn-primary {
+  border: 1px solid #0d4aab;
+  box-shadow: inset 0 1px 0 0 #97c4fe;
+  text-shadow: -1px -1px 0 #003ea1;
+  color: white;
+  background: linear-gradient(to top, #54a2f9 0%, #2e7be3 100%);
+}
+
+.nm-btn-danger {
+  border: 1px solid #a00;
+  box-shadow: inset 0 1px 0 0 #f9a0a0;
+  text-shadow: -1px -1px 0 #800;
+  color: white;
+  background: linear-gradient(to top, #e74c3c 0%, #c0392b 100%);
+}
+
+.nm-feedback {
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.nm-feedback-success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.nm-feedback-error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.nm-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nm-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 15px;
+  background: #fafafa;
+}
+
+.nm-card-editing {
+  background: #fff9e6;
+  border-color: #f0d060;
+}
+
+.nm-card-deleting {
+  background: #fff3f3;
+  border-color: #f5c6cb;
+}
+
+.nm-card-display-name {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.nm-card-details {
+  display: flex;
+  gap: 15px;
+  color: #555;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.nm-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.nm-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nm-edit-fields {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nm-edit-fields label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nm-delete-confirm {
+  font-weight: bold;
+  color: #721c24;
+  margin-bottom: 10px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 8px 12px;
+}

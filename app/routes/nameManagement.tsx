@@ -57,6 +57,7 @@ export default function NameManagement() {
   const navigation = useNavigation();
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [deletingRow, setDeletingRow] = useState<number | null>(null);
+  const [filter, setFilter] = useState('');
 
   const isSubmitting = navigation.state === 'submitting';
 
@@ -108,8 +109,22 @@ export default function NameManagement() {
 
       <section>
         <h2>משפחות קיימות ({families.length})</h2>
+        <input
+          type="text"
+          className="nm-input nm-filter"
+          placeholder="סינון משפחות..."
+          value={filter}
+          onInput={(e) => setFilter(e.currentTarget.value)}
+        />
         <div className="nm-cards">
-          {families.map((fam) => {
+          {families.filter((fam) => {
+            if (!filter) return true;
+            const q = filter.toLowerCase();
+            return fam.displayName.toLowerCase().includes(q)
+              || fam.family.toLowerCase().includes(q)
+              || fam.husband.toLowerCase().includes(q)
+              || fam.wife.toLowerCase().includes(q);
+          }).map((fam) => {
             const isEditing = editingRow === fam.rowIndex;
             const isDeleting = deletingRow === fam.rowIndex;
 

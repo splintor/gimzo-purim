@@ -1,7 +1,10 @@
 import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 import { type ActionFunctionArgs, json, type MetaFunction } from '@vercel/remix';
 import { useEffect, useState } from 'react';
+import { CloseSVG } from '~/CloseSVG';
 import { addFamily, deleteFamily, getNamesData, updateFamily } from '~/googleapis.server';
+
+const STREET_OPTIONS = ['ראשון', 'שני', 'שלישי', 'הרחבה'] as const;
 
 export const meta: MetaFunction = () => [
   { title: 'ניהול שמות - גמזו' },
@@ -21,10 +24,15 @@ export async function action({ request }: ActionFunctionArgs) {
       const family = (formData.get('family') as string ?? '').trim();
       const husband = (formData.get('husband') as string ?? '').trim();
       const wife = (formData.get('wife') as string ?? '').trim();
+      const street = (formData.get('street') as string ?? '').trim();
+      const location = (formData.get('location') as string ?? '').trim();
       if (!family && !husband && !wife) {
         return json({ success: null as string | null, error: 'יש למלא לפחות שדה אחד.' });
       }
-      await addFamily(family, husband, wife);
+      if (!street) {
+        return json({ success: null as string | null, error: 'יש לבחור רחוב.' });
+      }
+      await addFamily(family, husband, wife, street, location);
       return json({ success: `משפחת ${family} נוספה בהצלחה.` as string | null, error: null as string | null });
     }
 
@@ -34,7 +42,12 @@ export async function action({ request }: ActionFunctionArgs) {
       const family = (formData.get('family') as string ?? '').trim();
       const husband = (formData.get('husband') as string ?? '').trim();
       const wife = (formData.get('wife') as string ?? '').trim();
-      await updateFamily(rowIndex, expectedFamily, family, husband, wife);
+      const street = (formData.get('street') as string ?? '').trim();
+      const location = (formData.get('location') as string ?? '').trim();
+      if (!street) {
+        return json({ success: null as string | null, error: 'יש לבחור רחוב.' });
+      }
+      await updateFamily(rowIndex, expectedFamily, family, husband, wife, street, location);
       return json({ success: `משפחת ${family} עודכנה בהצלחה.` as string | null, error: null as string | null });
     }
 
@@ -95,6 +108,11 @@ export default function NameManagement() {
           <input type="text" name="family" placeholder="משפחה" className="nm-input" />
           <input type="text" name="husband" placeholder="בעל" className="nm-input" />
           <input type="text" name="wife" placeholder="אשה" className="nm-input" />
+          <select name="street" className="nm-input" required>
+            <option value="">רחוב...</option>
+            {STREET_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <input type="text" name="location" placeholder="מיקום מדויק" className="nm-input" />
           <button type="submit" className="nm-btn nm-btn-primary" disabled={isSubmitting}>
             {isSubmitting && navigation.formData?.get('_action') === 'add' ? 'מוסיף...' : 'הוסף'}
           </button>
@@ -109,13 +127,20 @@ export default function NameManagement() {
 
       <section>
         <h2>משפחות קיימות ({families.length})</h2>
-        <input
-          type="text"
-          className="nm-input nm-filter"
-          placeholder="סינון משפחות..."
-          value={filter}
-          onInput={(e) => setFilter(e.currentTarget.value)}
-        />
+        <div className="nm-filter-wrapper">
+          <input
+            type="text"
+            className="nm-input nm-filter"
+            placeholder="סינון משפחות..."
+            value={filter}
+            onInput={(e) => setFilter(e.currentTarget.value)}
+          />
+          {filter && (
+            <button type="button" className="nm-filter-clear" onClick={() => setFilter('')}>
+              <CloseSVG />
+            </button>
+          )}
+        </div>
         <div className="nm-cards">
           {families.filter((fam) => {
             if (!filter) return true;
@@ -148,6 +173,17 @@ export default function NameManagement() {
                         אשה:
                         <input type="text" name="wife" defaultValue={fam.wife} className="nm-input" />
                       </label>
+                      <label>
+                        רחוב:
+                        <select name="street" className="nm-input" defaultValue={fam.street} required>
+                          <option value="">רחוב...</option>
+                          {STREET_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </label>
+                      <label>
+                        מיקום מדויק:
+                        <input type="text" name="location" defaultValue={fam.location} className="nm-input" />
+                      </label>
                     </div>
                     <div className="nm-card-actions">
                       <button type="submit" className="nm-btn nm-btn-primary" disabled={isSubmitting}>
@@ -168,7 +204,7 @@ export default function NameManagement() {
                   <div className="nm-delete-confirm">
                     האם למחוק את {fam.displayName || fam.family}?
                   </div>
-                  <Form method="post" className="nm-card-actions">
+                  <Form method="post" className="nm-delete-actions">
                     <input type="hidden" name="_action" value="delete" />
                     <input type="hidden" name="rowIndex" value={fam.rowIndex} />
                     <input type="hidden" name="expectedFamily" value={fam.family} />
@@ -190,6 +226,8 @@ export default function NameManagement() {
                   <span>משפחה: {fam.family}</span>
                   <span>בעל: {fam.husband}</span>
                   <span>אשה: {fam.wife}</span>
+                  <span>רחוב: {fam.street}</span>
+                  {fam.location && <span>מיקום: {fam.location}</span>}
                 </div>
                 <div className="nm-card-actions">
                   <button type="button" className="nm-btn nm-btn-primary" onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); }}>

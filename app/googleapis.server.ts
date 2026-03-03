@@ -99,10 +99,10 @@ export async function getData(initialValuesHash: string | null) {
 }
 
 async function sortNamesSheet(sheets: ReturnType<typeof getGoogleSheets>) {
-  // Read columns B:D (editable data) and J (computed display name) to sort by
+  // Read columns B:F (editable data) and G (computed display name) to sort by
   const [dataResponse, displayResponse] = await Promise.all([
-    sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!B2:D` }),
-    sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!J2:J` }),
+    sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!B2:F` }),
+    sheets.spreadsheets.values.get({ spreadsheetId, range: `${namesSheetName}!G2:G` }),
   ]);
   const dataRows = dataResponse.data.values ?? [];
   const displayRows = displayResponse.data.values ?? [];
@@ -114,11 +114,11 @@ async function sortNamesSheet(sheets: ReturnType<typeof getGoogleSheets>) {
   }));
   paired.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
-  // Write back only columns B:D (preserving column A indices and E+ formulas)
+  // Write back only columns B:F (preserving column A indices and G formula)
   const lastRow = dataRows.length + 1; // +1 because data starts at row 2
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${namesSheetName}!B2:D${lastRow}`,
+    range: `${namesSheetName}!B2:F${lastRow}`,
     valueInputOption: 'RAW',
     requestBody: { values: paired.map((p) => p.data) },
   });
@@ -126,10 +126,10 @@ async function sortNamesSheet(sheets: ReturnType<typeof getGoogleSheets>) {
 
 export async function getNamesData() {
   const sheets = getGoogleSheets();
-  // Column A = index, B = משפחה, C = בעל, D = אשה, J = שם לטופס (computed)
+  // Column A = index, B = משפחה, C = בעל, D = אשה, E = רחוב, F = מיקום מדויק, G = שם לטופס (computed)
   const dataResponse = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${namesSheetName}!A2:J`,
+    range: `${namesSheetName}!A2:G`,
   });
   const rows = dataResponse.data.values ?? [];
 
@@ -139,11 +139,13 @@ export async function getNamesData() {
     family: row[1] ?? '',
     husband: row[2] ?? '',
     wife: row[3] ?? '',
-    displayName: row[9] ?? '',
+    street: row[4] ?? '',
+    location: row[5] ?? '',
+    displayName: row[6] ?? '',
   }));
 }
 
-export async function addFamily(family: string, husband: string, wife: string) {
+export async function addFamily(family: string, husband: string, wife: string, street: string, location: string) {
   const sheets = getGoogleSheets();
   // Find the next empty row by counting existing data in column B
   const colB = await sheets.spreadsheets.values.get({
@@ -153,15 +155,15 @@ export async function addFamily(family: string, husband: string, wife: string) {
   const nextRow = (colB.data.values?.length ?? 1) + 1;
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${namesSheetName}!B${nextRow}:D${nextRow}`,
+    range: `${namesSheetName}!B${nextRow}:F${nextRow}`,
     valueInputOption: 'RAW',
-    requestBody: { values: [[family, husband, wife]] },
+    requestBody: { values: [[family, husband, wife, street, location]] },
   });
   await sortNamesSheet(sheets);
-  void sendToTelegram(`משפחה חדשה נוספה: משפחת ${family}, בעל: ${husband}, אשה: ${wife}`);
+  void sendToTelegram(`משפחה חדשה נוספה: משפחת ${family}, בעל: ${husband}, אשה: ${wife}, רחוב: ${street}`);
 }
 
-export async function updateFamily(rowIndex: number, expectedFamily: string, family: string, husband: string, wife: string) {
+export async function updateFamily(rowIndex: number, expectedFamily: string, family: string, husband: string, wife: string, street: string, location: string) {
   const sheets = getGoogleSheets();
   const currentRow = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -173,12 +175,12 @@ export async function updateFamily(rowIndex: number, expectedFamily: string, fam
   }
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${namesSheetName}!B${rowIndex}:D${rowIndex}`,
+    range: `${namesSheetName}!B${rowIndex}:F${rowIndex}`,
     valueInputOption: 'RAW',
-    requestBody: { values: [[family, husband, wife]] },
+    requestBody: { values: [[family, husband, wife, street, location]] },
   });
   await sortNamesSheet(sheets);
-  void sendToTelegram(`משפחה עודכנה: ${expectedFamily} -> משפחת ${family}, בעל: ${husband}, אשה: ${wife}`);
+  void sendToTelegram(`משפחה עודכנה: ${expectedFamily} -> משפחת ${family}, בעל: ${husband}, אשה: ${wife}, רחוב: ${street}`);
 }
 
 export async function deleteFamily(rowIndex: number, expectedFamily: string) {

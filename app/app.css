@@ -24,10 +24,6 @@ form {
   }
 }
 
-form > div {
-  margin-top: 20px;
-}
-
 .radio-button {
   margin-top: 7px;
 }
@@ -232,6 +228,16 @@ form > div {
   flex-wrap: wrap;
 }
 
+.nm-add-form > .nm-input,
+.nm-add-form > .nm-preview {
+  width: 80%;
+  box-sizing: border-box;
+}
+
+.nm-add-form > .nm-preview {
+  min-width: 80%;
+}
+
 .nm-input {
   padding: 6px 8px;
   border: 1px solid #ced4da;
@@ -319,6 +325,12 @@ form > div {
   gap: 10px;
 }
 
+.nm-no-results {
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+}
+
 .nm-card {
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -371,7 +383,8 @@ form > div {
 .nm-edit-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
+  margin: 0;
 }
 
 .nm-edit-fields {
@@ -386,13 +399,27 @@ form > div {
   gap: 5px;
 }
 
-.nm-delete-actions {
-  display: flex;
-  gap: 8px;
+.nm-duplicate-warning {
+  color: #dc3545;
+  font-weight: bold;
+  margin-inline-start: 10px;
 }
 
-.nm-delete-actions .nm-btn {
-  flex: 0 0 auto;
+.nm-preview {
+  max-width: max-content;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  color: #333;
+}
+
+.nm-delete-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: auto;
+  margin: 0;
 }
 
 .nm-delete-confirm {

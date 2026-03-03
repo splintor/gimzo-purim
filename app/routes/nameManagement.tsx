@@ -6,8 +6,13 @@ import { addFamily, deleteFamily, getNamesData, updateFamily } from '~/googleapi
 
 const STREET_OPTIONS = ['ראשון', 'שני', 'שלישי', 'הרחבה'] as const;
 
+function computeDisplayName(family: string, husband: string, wife: string) {
+  if (!husband) return family ? `משפחת ${family}` : '';
+  return `${family} ${husband}${wife ? ` ו${wife}` : ''}`.trim();
+}
+
 export const meta: MetaFunction = () => [
-  { title: 'ניהול שמות - גמזו' },
+  { title: 'משלוח מנות מושבי - גמזו - ניהול שמות' },
 ];
 
 export async function loader() {
@@ -71,43 +76,51 @@ export default function NameManagement() {
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [deletingRow, setDeletingRow] = useState<number | null>(null);
   const [filter, setFilter] = useState('');
+  const [addFields, setAddFields] = useState({ family: '', husband: '', wife: '' });
+  const [editFields, setEditFields] = useState({ family: '', husband: '', wife: '' });
 
   const isSubmitting = navigation.state === 'submitting';
 
   // Reset editing/deleting state when families data refreshes (after successful action)
+  const [lastAction, setLastAction] = useState<string | null>(null);
   useEffect(() => {
+    if (navigation.state === 'submitting') {
+      setLastAction(navigation.formData?.get('_action') as string);
+    }
     if (navigation.state === 'idle') {
       setEditingRow(null);
       setDeletingRow(null);
+      if (lastAction === 'add') {
+        setAddFields({ family: '', husband: '', wife: '' });
+      }
+      setLastAction(null);
     }
   }, [navigation.state, families]);
 
   return (
     <div className="name-management">
-      <h1>ניהול שמות - גמזו</h1>
-
-      <details className="nm-info-box">
-        <summary>איך להגן על הגיליון בגוגל שיטס?</summary>
-        <ol>
-          <li>פתחו את הגיליון בגוגל שיטס.</li>
-          <li>לחצו על הלשונית &quot;שמות&quot; בתחתית המסך עם כפתור ימני.</li>
-          <li>בחרו &quot;הגנה על הגיליון&quot;.</li>
-          <li>סמנו &quot;גיליון&quot; (ולא טווח).</li>
-          <li>לחצו &quot;הגדר הרשאות&quot;.</li>
-          <li>בחרו &quot;הגבל מי יכול לערוך טווח זה&quot;.</li>
-          <li>הוסיפו רק את כתובות המייל שצריכות הרשאת עריכה.</li>
-          <li>לחצו &quot;סיום&quot;.</li>
-        </ol>
-        <p>מעתה, כל שינוי בשמות יתבצע דרך <a href="/nameManagement">דף ניהול השמות</a> בלבד.</p>
-      </details>
+      <h1>משלוח מנות מושבי - גמזו - ניהול שמות</h1>
 
       <section className="nm-add-section">
         <h2>הוספת משפחה חדשה</h2>
         <Form method="post" className="nm-add-form">
           <input type="hidden" name="_action" value="add" />
-          <input type="text" name="family" placeholder="משפחה" className="nm-input" />
-          <input type="text" name="husband" placeholder="בעל" className="nm-input" />
-          <input type="text" name="wife" placeholder="אשה" className="nm-input" />
+          <input type="text" name="family" placeholder="משפחה" className="nm-input"
+            value={addFields.family} onInput={(e) => { const v = e.currentTarget.value; setAddFields((f) => ({ ...f, family: v })); }} />
+          <input type="text" name="husband" placeholder="בעל" className="nm-input"
+            value={addFields.husband} onInput={(e) => { const v = e.currentTarget.value; setAddFields((f) => ({ ...f, husband: v })); }} />
+          <input type="text" name="wife" placeholder="אשה" className="nm-input"
+            value={addFields.wife} onInput={(e) => { const v = e.currentTarget.value; setAddFields((f) => ({ ...f, wife: v })); }} />
+          {(addFields.family || addFields.husband || addFields.wife) && (() => {
+            const preview = computeDisplayName(addFields.family, addFields.husband, addFields.wife);
+            const isDuplicate = families.some((fam) => fam.displayName === preview);
+            return (
+              <div className="nm-preview">
+                שם לטופס: <b>{preview}</b>
+                {isDuplicate && <span className="nm-duplicate-warning">משפחה זו כבר קיימת!</span>}
+              </div>
+            );
+          })()}
           <select name="street" className="nm-input" required>
             <option value="">נא לבחור רחוב:</option>
             {STREET_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -134,6 +147,7 @@ export default function NameManagement() {
             placeholder="סינון משפחות..."
             value={filter}
             onInput={(e) => setFilter(e.currentTarget.value)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setFilter(''); }}
           />
           {filter && (
             <button type="button" className="nm-filter-clear" onClick={() => setFilter('')}>
@@ -142,14 +156,19 @@ export default function NameManagement() {
           )}
         </div>
         <div className="nm-cards">
-          {families.filter((fam) => {
-            if (!filter) return true;
-            const q = filter.toLowerCase();
-            return fam.displayName.toLowerCase().includes(q)
-              || fam.family.toLowerCase().includes(q)
-              || fam.husband.toLowerCase().includes(q)
-              || fam.wife.toLowerCase().includes(q);
-          }).map((fam) => {
+          {(() => {
+            const filtered = families.filter((fam) => {
+              if (!filter) return true;
+              const q = filter.toLowerCase();
+              return fam.displayName.toLowerCase().includes(q)
+                || fam.family.toLowerCase().includes(q)
+                || fam.husband.toLowerCase().includes(q)
+                || fam.wife.toLowerCase().includes(q);
+            });
+            if (filter && filtered.length === 0) {
+              return <div className="nm-no-results">לא נמצאו משפחות שמתאימות לחיפוש.</div>;
+            }
+            return filtered.map((fam) => {
             const isEditing = editingRow === fam.rowIndex;
             const isDeleting = deletingRow === fam.rowIndex;
 
@@ -163,16 +182,22 @@ export default function NameManagement() {
                     <div className="nm-edit-fields">
                       <label>
                         משפחה:
-                        <input type="text" name="family" defaultValue={fam.family} className="nm-input" />
+                        <input type="text" name="family" value={editFields.family} className="nm-input"
+                          onInput={(e) => { const v = e.currentTarget.value; setEditFields((f) => ({ ...f, family: v })); }} />
                       </label>
                       <label>
                         בעל:
-                        <input type="text" name="husband" defaultValue={fam.husband} className="nm-input" />
+                        <input type="text" name="husband" value={editFields.husband} className="nm-input"
+                          onInput={(e) => { const v = e.currentTarget.value; setEditFields((f) => ({ ...f, husband: v })); }} />
                       </label>
                       <label>
                         אשה:
-                        <input type="text" name="wife" defaultValue={fam.wife} className="nm-input" />
+                        <input type="text" name="wife" value={editFields.wife} className="nm-input"
+                          onInput={(e) => { const v = e.currentTarget.value; setEditFields((f) => ({ ...f, wife: v })); }} />
                       </label>
+                    </div>
+                    <div className="nm-preview">שם לטופס: <b>{computeDisplayName(editFields.family, editFields.husband, editFields.wife)}</b></div>
+                    <div className="nm-edit-fields">
                       <label>
                         רחוב:
                         <select name="street" className="nm-input" defaultValue={fam.street} required>
@@ -230,7 +255,7 @@ export default function NameManagement() {
                   {fam.location && <span>מיקום: {fam.location}</span>}
                 </div>
                 <div className="nm-card-actions">
-                  <button type="button" className="nm-btn nm-btn-primary" onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); }}>
+                  <button type="button" className="nm-btn nm-btn-primary" onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); setEditFields({ family: fam.family, husband: fam.husband, wife: fam.wife }); }}>
                     ערוך
                   </button>
                   <button type="button" className="nm-btn nm-btn-danger" onClick={() => { setDeletingRow(fam.rowIndex); setEditingRow(null); }}>
@@ -239,7 +264,8 @@ export default function NameManagement() {
                 </div>
               </div>
             );
-          })}
+          });
+          })()}
         </div>
       </section>
     </div>

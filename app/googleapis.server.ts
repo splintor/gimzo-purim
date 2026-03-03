@@ -152,12 +152,14 @@ export async function addFamily(family: string, husband: string, wife: string, s
     spreadsheetId,
     range: `${namesSheetName}!B:B`,
   });
-  const nextRow = (colB.data.values?.length ?? 1) + 1;
+  const dataCount = (colB.data.values?.length ?? 1) - 1; // subtract header row
+  const nextRow = dataCount + 2; // +2 because data starts at row 2
+  const nextIndex = dataCount + 1;
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${namesSheetName}!B${nextRow}:F${nextRow}`,
+    range: `${namesSheetName}!A${nextRow}:F${nextRow}`,
     valueInputOption: 'RAW',
-    requestBody: { values: [[family, husband, wife, street, location]] },
+    requestBody: { values: [[nextIndex, family, husband, wife, street, location]] },
   });
   await sortNamesSheet(sheets);
   void sendToTelegram(`משפחה חדשה נוספה: משפחת ${family}, בעל: ${husband}, אשה: ${wife}, רחוב: ${street}`);
@@ -214,6 +216,20 @@ export async function deleteFamily(rowIndex: number, expectedFamily: string) {
       ],
     },
   });
+  // Re-index column A to fill the gap left by the deleted row
+  const remaining = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${namesSheetName}!A2:A`,
+  });
+  const rowCount = remaining.data.values?.length ?? 0;
+  if (rowCount > 0) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${namesSheetName}!A2:A${rowCount + 1}`,
+      valueInputOption: 'RAW',
+      requestBody: { values: Array.from({ length: rowCount }, (_, i) => [i + 1]) },
+    });
+  }
   void sendToTelegram(`משפחה נמחקה: ${expectedFamily}`);
 }
 

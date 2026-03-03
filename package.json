@@ -36,7 +36,9 @@
   },
   "resolutions": {
     "minimatch": ">=10.2.1",
-    "tar": "^7.5.8"
+    "esbuild": ">=0.27.3",
+    "tar": "^7.5.8",
+    "vite": "^5"
   },
   "engines": {
     "node": ">=18.0.0"

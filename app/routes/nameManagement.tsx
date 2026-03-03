@@ -109,10 +109,10 @@ export default function NameManagement() {
           <input type="text" name="husband" placeholder="בעל" className="nm-input" />
           <input type="text" name="wife" placeholder="אשה" className="nm-input" />
           <select name="street" className="nm-input" required>
-            <option value="">רחוב...</option>
+            <option value="">נא לבחור רחוב:</option>
             {STREET_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <input type="text" name="location" placeholder="מיקום מדויק" className="nm-input" />
+          <input type="text" name="location" placeholder="מיקום מדויק (לא חובה)" className="nm-input" />
           <button type="submit" className="nm-btn nm-btn-primary" disabled={isSubmitting}>
             {isSubmitting && navigation.formData?.get('_action') === 'add' ? 'מוסיף...' : 'הוסף'}
           </button>
@@ -176,7 +176,7 @@ export default function NameManagement() {
                       <label>
                         רחוב:
                         <select name="street" className="nm-input" defaultValue={fam.street} required>
-                          <option value="">רחוב...</option>
+                          <option value="">נא לבחור רחוב:</option>
                           {STREET_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </label>

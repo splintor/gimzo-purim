@@ -29,6 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
       const family = (formData.get('family') as string ?? '').trim();
       const husband = (formData.get('husband') as string ?? '').trim();
       const wife = (formData.get('wife') as string ?? '').trim();
+      const mourning = formData.get('mourning') === 'on';
       const street = (formData.get('street') as string ?? '').trim();
       const location = (formData.get('location') as string ?? '').trim();
       if (!family && !husband && !wife) {
@@ -37,7 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
       if (!street) {
         return json({ success: null as string | null, error: 'יש לבחור רחוב.' });
       }
-      await addFamily(family, husband, wife, street, location);
+      await addFamily(family, husband, wife, mourning, street, location);
       return json({ success: `משפחת ${family} נוספה בהצלחה.` as string | null, error: null as string | null });
     }
 
@@ -47,12 +48,13 @@ export async function action({ request }: ActionFunctionArgs) {
       const family = (formData.get('family') as string ?? '').trim();
       const husband = (formData.get('husband') as string ?? '').trim();
       const wife = (formData.get('wife') as string ?? '').trim();
+      const mourning = formData.get('mourning') === 'on';
       const street = (formData.get('street') as string ?? '').trim();
       const location = (formData.get('location') as string ?? '').trim();
       if (!street) {
         return json({ success: null as string | null, error: 'יש לבחור רחוב.' });
       }
-      await updateFamily(rowIndex, expectedFamily, family, husband, wife, street, location);
+      await updateFamily(rowIndex, expectedFamily, family, husband, wife, mourning, street, location);
       return json({ success: `משפחת ${family} עודכנה בהצלחה.` as string | null, error: null as string | null });
     }
 
@@ -77,7 +79,7 @@ export default function NameManagement() {
   const [deletingRow, setDeletingRow] = useState<number | null>(null);
   const [filter, setFilter] = useState('');
   const [addFields, setAddFields] = useState({ family: '', husband: '', wife: '' });
-  const [editFields, setEditFields] = useState({ family: '', husband: '', wife: '' });
+  const [editFields, setEditFields] = useState({ family: '', husband: '', wife: '', mourning: false });
 
   const isSubmitting = navigation.state === 'submitting';
 
@@ -121,6 +123,10 @@ export default function NameManagement() {
               </div>
             );
           })()}
+          <label className="nm-checkbox-label">
+            <input type="checkbox" name="mourning" />
+            אבל
+          </label>
           <select name="street" className="nm-input" required>
             <option value="">נא לבחור רחוב:</option>
             {STREET_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -174,7 +180,7 @@ export default function NameManagement() {
 
             if (isEditing) {
               return (
-                <div key={fam.rowIndex} className="nm-card nm-card-editing">
+                <div key={fam.rowIndex} className={`nm-card nm-card-editing${editFields.mourning ? ' nm-card-mourning' : ''}`}>
                   <Form method="post" className="nm-edit-form">
                     <input type="hidden" name="_action" value="update" />
                     <input type="hidden" name="rowIndex" value={fam.rowIndex} />
@@ -208,6 +214,11 @@ export default function NameManagement() {
                       <label>
                         מיקום מדויק:
                         <input type="text" name="location" defaultValue={fam.location} className="nm-input" />
+                      </label>
+                      <label className="nm-checkbox-label">
+                        <input type="checkbox" name="mourning" checked={editFields.mourning}
+                          onChange={(e) => { const v = e.currentTarget.checked; setEditFields((f) => ({ ...f, mourning: v })); }} />
+                        אבל
                       </label>
                     </div>
                     <div className="nm-card-actions">
@@ -245,17 +256,18 @@ export default function NameManagement() {
             }
 
             return (
-              <div key={fam.rowIndex} className="nm-card">
+              <div key={fam.rowIndex} className={`nm-card${fam.mourning ? ' nm-card-mourning' : ''}`}>
                 <div className="nm-card-display-name"><span className="nm-card-index">{fam.index}</span>{fam.displayName}</div>
                 <div className="nm-card-details">
                   <span>משפחה: {fam.family}</span>
                   <span>בעל: {fam.husband}</span>
                   <span>אשה: {fam.wife}</span>
+                  {fam.mourning && <span>אבל: כן</span>}
                   <span>רחוב: {fam.street}</span>
                   {fam.location && <span>מיקום: {fam.location}</span>}
                 </div>
                 <div className="nm-card-actions">
-                  <button type="button" className="nm-btn nm-btn-primary" onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); setEditFields({ family: fam.family, husband: fam.husband, wife: fam.wife }); }}>
+                  <button type="button" className="nm-btn nm-btn-primary" onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); setEditFields({ family: fam.family, husband: fam.husband, wife: fam.wife, mourning: fam.mourning }); }}>
                     ערוך
                   </button>
                   <button type="button" className="nm-btn nm-btn-danger" onClick={() => { setDeletingRow(fam.rowIndex); setEditingRow(null); }}>

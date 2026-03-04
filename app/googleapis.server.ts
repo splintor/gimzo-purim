@@ -36,6 +36,11 @@ function getGoogleSheets() {
   return google.sheets({ version: 'v4', auth });
 }
 
+function computeDisplayName(family: string, husband: string, wife: string) {
+  if (!husband) return family ? `משפחת ${family}` : '';
+  return `${family} ${husband}${wife ? ` ו${wife}` : ''}`.trim();
+}
+
 function getValueByColumnName(row: string[] | undefined, columns: string[], columnName: string) {
   if (!row) {
     return null;
@@ -124,6 +129,130 @@ async function sortNamesSheet(sheets: ReturnType<typeof getGoogleSheets>) {
   });
 }
 
+async function updateRegistrationsOnRename(sheets: ReturnType<typeof getGoogleSheets>, oldDisplayName: string, newDisplayName: string) {
+  if (!oldDisplayName || oldDisplayName === newDisplayName) return;
+
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${registrationsSheetName}!A:E`,
+  });
+  const rows = response.data.values ?? [];
+  if (rows.length <= 1) return;
+
+  const updates: { range: string; values: string[][] }[] = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const rowIndex = i + 1;
+    let colB = row[1] ?? '';
+    let colD = row[3] ?? '';
+    let changed = false;
+
+    if (colB === oldDisplayName) {
+      colB = newDisplayName;
+      changed = true;
+    }
+
+    if (colD) {
+      const families = colD.split(',').map((s: string) => s.trim());
+      const newFamilies = families.map((f: string) => f === oldDisplayName ? newDisplayName : f);
+      const newValue = newFamilies.join(',');
+      if (newValue !== colD) {
+        colD = newValue;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      updates.push({
+        range: `${registrationsSheetName}!B${rowIndex}:D${rowIndex}`,
+        values: [[colB, row[2] ?? '', colD]],
+      });
+    }
+  }
+
+  if (updates.length > 0) {
+    await sheets.spreadsheets.values.batchUpdate({
+      spreadsheetId,
+      requestBody: { valueInputOption: 'RAW', data: updates },
+    });
+    void sendToTelegram(`עדכון הרשמות בעקבות שינוי שם: ${oldDisplayName} -> ${newDisplayName}\nעודכנו ${updates.length} שורות בגיליון הרשמות.`);
+  }
+}
+
+async function updateRegistrationsOnDelete(sheets: ReturnType<typeof getGoogleSheets>, displayName: string) {
+  if (!displayName) return;
+
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${registrationsSheetName}!A:E`,
+  });
+  const rows = response.data.values ?? [];
+  if (rows.length <= 1) return;
+
+  const columnDUpdates: { range: string; values: string[][] }[] = [];
+  const rowsToDelete: number[] = []; // 0-based indices for deleteDimension
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const rowIndex = i + 1;
+
+    if ((row[1] ?? '') === displayName) {
+      rowsToDelete.push(i); // 0-based
+      continue;
+    }
+
+    if (row[3]) {
+      const families = row[3].split(',').map((s: string) => s.trim());
+      const newFamilies = families.filter((f: string) => f !== displayName);
+      if (newFamilies.length !== families.length) {
+        columnDUpdates.push({
+          range: `${registrationsSheetName}!D${rowIndex}`,
+          values: [[newFamilies.join(',')]],
+        });
+      }
+    }
+  }
+
+  if (columnDUpdates.length > 0) {
+    await sheets.spreadsheets.values.batchUpdate({
+      spreadsheetId,
+      requestBody: { valueInputOption: 'RAW', data: columnDUpdates },
+    });
+  }
+
+  if (rowsToDelete.length > 0) {
+    const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+    const registrationsSheetId = spreadsheet.data.sheets?.find(
+      (sheet) => sheet.properties?.title === registrationsSheetName,
+    )?.properties?.sheetId;
+
+    // Delete from bottom to top to avoid index shifting
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: rowsToDelete.sort((a, b) => b - a).map(index => ({
+          deleteDimension: {
+            range: {
+              sheetId: registrationsSheetId,
+              dimension: 'ROWS',
+              startIndex: index,
+              endIndex: index + 1,
+            },
+          },
+        })),
+      },
+    });
+  }
+
+  const parts: string[] = [];
+  if (rowsToDelete.length > 0) parts.push(`נמחקו ${rowsToDelete.length} שורות הרשמה של ${displayName}`);
+  if (columnDUpdates.length > 0) parts.push(`הוסר מרשימת משפחות ב-${columnDUpdates.length} שורות`);
+  if (parts.length > 0) {
+    void sendToTelegram(`עדכון הרשמות בעקבות מחיקת ${displayName}:\n${parts.join('\n')}`);
+  }
+}
+
 export async function getNamesData() {
   const sheets = getGoogleSheets();
   // Column A = index, B = משפחה, C = בעל, D = אשה, E = אבל, F = רחוב, G = מיקום מדויק, H = שם לטופס (computed)
@@ -163,19 +292,23 @@ export async function addFamily(family: string, husband: string, wife: string, m
     requestBody: { values: [[nextIndex, family, husband, wife, mourning ? 'כן' : '', street, location]] },
   });
   await sortNamesSheet(sheets);
-  void sendToTelegram(`משפחה חדשה נוספה: משפחת ${family}, בעל: ${husband}, אשה: ${wife}, רחוב: ${street}`);
+  void sendToTelegram(`משפחה חדשה נוספה: משפחת ${family}, בעל: ${husband}, אשה: ${wife}${mourning ? ', אבל' : ''}, רחוב: ${street}`);
 }
 
 export async function updateFamily(rowIndex: number, expectedFamily: string, family: string, husband: string, wife: string, mourning: boolean, street: string, location: string) {
   const sheets = getGoogleSheets();
+  // Read B through H to verify family and get old display name
   const currentRow = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${namesSheetName}!B${rowIndex}:B${rowIndex}`,
+    range: `${namesSheetName}!B${rowIndex}:H${rowIndex}`,
   });
-  const currentFamily = currentRow.data.values?.[0]?.[0] ?? '';
+  const currentValues = currentRow.data.values?.[0] ?? [];
+  const currentFamily = currentValues[0] ?? '';
   if (currentFamily !== expectedFamily) {
     throw new Error(`Row ${rowIndex} has family "${currentFamily}" but expected "${expectedFamily}". The sheet may have been modified.`);
   }
+  const oldDisplayName = currentValues[6] ?? ''; // H = index 6 (B=0..H=6)
+
   await sheets.spreadsheets.values.update({
     spreadsheetId,
     range: `${namesSheetName}!B${rowIndex}:G${rowIndex}`,
@@ -183,19 +316,30 @@ export async function updateFamily(rowIndex: number, expectedFamily: string, fam
     requestBody: { values: [[family, husband, wife, mourning ? 'כן' : '', street, location]] },
   });
   await sortNamesSheet(sheets);
-  void sendToTelegram(`משפחה עודכנה: ${expectedFamily} -> משפחת ${family}, בעל: ${husband}, אשה: ${wife}, רחוב: ${street}`);
+
+  const newDisplayName = computeDisplayName(family, husband, wife);
+  if (oldDisplayName && oldDisplayName !== newDisplayName) {
+    await updateRegistrationsOnRename(sheets, oldDisplayName, newDisplayName);
+    await processShipping(sheets);
+  }
+
+  void sendToTelegram(`משפחה עודכנה: ${expectedFamily} -> משפחת ${family}, בעל: ${husband}, אשה: ${wife}${mourning ? ', אבל' : ''}, רחוב: ${street}`);
 }
 
 export async function deleteFamily(rowIndex: number, expectedFamily: string) {
   const sheets = getGoogleSheets();
+  // Read B through H to verify family and get display name
   const currentRow = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${namesSheetName}!B${rowIndex}:B${rowIndex}`,
+    range: `${namesSheetName}!B${rowIndex}:H${rowIndex}`,
   });
-  const currentFamily = currentRow.data.values?.[0]?.[0] ?? '';
+  const currentValues = currentRow.data.values?.[0] ?? [];
+  const currentFamily = currentValues[0] ?? '';
   if (currentFamily !== expectedFamily) {
     throw new Error(`Row ${rowIndex} has family "${currentFamily}" but expected "${expectedFamily}". The sheet may have been modified.`);
   }
+  const displayName = currentValues[6] ?? ''; // H = index 6
+
   const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
   const namesSheetId = spreadsheet.data.sheets?.find(
     (sheet) => sheet.properties?.title === namesSheetName,
@@ -231,6 +375,13 @@ export async function deleteFamily(rowIndex: number, expectedFamily: string) {
       requestBody: { values: Array.from({ length: rowCount }, (_, i) => [i + 1]) },
     });
   }
+
+  // Update registrations sheet: remove from column D, delete rows where column B matches
+  if (displayName) {
+    await updateRegistrationsOnDelete(sheets, displayName);
+    await processShipping(sheets);
+  }
+
   void sendToTelegram(`משפחה נמחקה: ${expectedFamily}`);
 }
 

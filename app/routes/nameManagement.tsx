@@ -225,7 +225,7 @@ export default function NameManagement() {
                       <button type="submit" className="nm-btn nm-btn-primary" disabled={isSubmitting}>
                         {isSubmitting && navigation.formData?.get('_action') === 'update' ? 'שומר...' : 'שמור'}
                       </button>
-                      <button type="button" className="nm-btn" onClick={() => setEditingRow(null)}>
+                      <button type="button" className="nm-btn" disabled={isSubmitting} onClick={() => setEditingRow(null)}>
                         ביטול
                       </button>
                     </div>
@@ -247,7 +247,7 @@ export default function NameManagement() {
                     <button type="submit" className="nm-btn nm-btn-danger" disabled={isSubmitting}>
                       {isSubmitting && navigation.formData?.get('_action') === 'delete' ? 'מוחק...' : 'כן, מחק'}
                     </button>
-                    <button type="button" className="nm-btn" onClick={() => setDeletingRow(null)}>
+                    <button type="button" className="nm-btn" disabled={isSubmitting} onClick={() => setDeletingRow(null)}>
                       ביטול
                     </button>
                   </Form>
@@ -267,10 +267,10 @@ export default function NameManagement() {
                   {fam.location && <span>מיקום: {fam.location}</span>}
                 </div>
                 <div className="nm-card-actions">
-                  <button type="button" className="nm-btn nm-btn-primary" onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); setEditFields({ family: fam.family, husband: fam.husband, wife: fam.wife, mourning: fam.mourning }); }}>
+                  <button type="button" className="nm-btn nm-btn-primary" disabled={isSubmitting} onClick={() => { setEditingRow(fam.rowIndex); setDeletingRow(null); setEditFields({ family: fam.family, husband: fam.husband, wife: fam.wife, mourning: fam.mourning }); }}>
                     ערוך
                   </button>
-                  <button type="button" className="nm-btn nm-btn-danger" onClick={() => { setDeletingRow(fam.rowIndex); setEditingRow(null); }}>
+                  <button type="button" className="nm-btn nm-btn-danger" disabled={isSubmitting} onClick={() => { setDeletingRow(fam.rowIndex); setEditingRow(null); }}>
                     מחק
                   </button>
                 </div>

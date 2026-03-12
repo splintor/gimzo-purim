@@ -1,6 +1,6 @@
 {
   "name": "my-remix-app",
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.13.0",
   "private": true,
   "sideEffects": false,
   "type": "module",

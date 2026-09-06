@@ -1,7 +1,6 @@
 import { HDate } from '@hebcal/core';
 import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
-import { DataFunctionArgs } from '@remix-run/server-runtime/dist/routeModules';
-import { type ActionFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
+import { type ActionFunctionArgs, type LoaderFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
 import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
 import { calculateSum, getDateAndTime } from '~/calculateSum';
@@ -20,7 +19,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader = ({ request }: DataFunctionArgs) =>
+export const loader = ({ request }: LoaderFunctionArgs) =>
   getData(new URLSearchParams(new URL(request.url).search).get('t'));
 
 // noinspection JSUnusedGlobalSymbols

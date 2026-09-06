@@ -1,6 +1,6 @@
 import { HDate } from '@hebcal/core';
-import { Form, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
-import { type ActionFunctionArgs, type LoaderFunctionArgs, type MetaFunction, redirect } from "@vercel/remix";
+import { Form, useFetcher, useLoaderData, useNavigation } from 'react-router';
+import { type ActionFunctionArgs, type LoaderFunctionArgs, type MetaFunction, redirect } from "react-router";
 import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
 import { calculateSum, getDateAndTime } from '~/calculateSum';

@@ -11,3 +11,5 @@ node_modules
 .install-state.gz
 
 gimzo-purim-20bca5d0754a.json
+
+.react-router

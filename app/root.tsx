@@ -4,9 +4,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
+} from "react-router";
 import { Analytics } from "@vercel/analytics/react";
-import type { LinksFunction } from "@vercel/remix";
+import type { LinksFunction } from "react-router";
 
 import appStylesHref from "./app.css?url";
 

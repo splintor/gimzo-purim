@@ -6,7 +6,8 @@ node_modules
 .env
 .vercel
 .idea
-.yarn
+.yarn/*
+!.yarn/releases
 .install-state.gz
 
 gimzo-purim-20bca5d0754a.json

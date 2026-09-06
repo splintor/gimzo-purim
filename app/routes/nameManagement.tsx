@@ -1,5 +1,5 @@
 import { Form, useActionData, useLoaderData, useNavigation } from 'react-router';
-import { type ActionFunctionArgs, json, type MetaFunction } from 'react-router';
+import { type ActionFunctionArgs, type MetaFunction } from 'react-router';
 import { useEffect, useState } from 'react';
 import { CloseSVG } from '~/CloseSVG';
 import { addFamily, deleteFamily, getNamesData, updateFamily } from '~/googleapis.server';
@@ -17,7 +17,7 @@ export const meta: MetaFunction = () => [
 
 export async function loader() {
   const families = await getNamesData();
-  return json({ families });
+  return { families };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -33,13 +33,13 @@ export async function action({ request }: ActionFunctionArgs) {
       const street = (formData.get('street') as string ?? '').trim();
       const location = (formData.get('location') as string ?? '').trim();
       if (!family && !husband && !wife) {
-        return json({ success: null as string | null, error: 'יש למלא לפחות שדה אחד.' });
+        return { success: null as string | null, error: 'יש למלא לפחות שדה אחד.' };
       }
       if (!street) {
-        return json({ success: null as string | null, error: 'יש לבחור רחוב.' });
+        return { success: null as string | null, error: 'יש לבחור רחוב.' };
       }
       await addFamily(family, husband, wife, mourning, street, location);
-      return json({ success: `משפחת ${family} נוספה בהצלחה.` as string | null, error: null as string | null });
+      return { success: `משפחת ${family} נוספה בהצלחה.` as string | null, error: null as string | null };
     }
 
     if (actionType === 'update') {
@@ -52,22 +52,22 @@ export async function action({ request }: ActionFunctionArgs) {
       const street = (formData.get('street') as string ?? '').trim();
       const location = (formData.get('location') as string ?? '').trim();
       if (!street) {
-        return json({ success: null as string | null, error: 'יש לבחור רחוב.' });
+        return { success: null as string | null, error: 'יש לבחור רחוב.' };
       }
       await updateFamily(rowIndex, expectedFamily, family, husband, wife, mourning, street, location);
-      return json({ success: `משפחת ${family} עודכנה בהצלחה.` as string | null, error: null as string | null });
+      return { success: `משפחת ${family} עודכנה בהצלחה.` as string | null, error: null as string | null };
     }
 
     if (actionType === 'delete') {
       const rowIndex = Number(formData.get('rowIndex'));
       const expectedFamily = formData.get('expectedFamily') as string;
       await deleteFamily(rowIndex, expectedFamily);
-      return json({ success: `משפחת ${expectedFamily} נמחקה בהצלחה.` as string | null, error: null as string | null });
+      return { success: `משפחת ${expectedFamily} נמחקה בהצלחה.` as string | null, error: null as string | null };
     }
 
-    return json({ success: null as string | null, error: 'פעולה לא מוכרת.' });
+    return { success: null as string | null, error: 'פעולה לא מוכרת.' };
   } catch (err) {
-    return json({ success: null as string | null, error: `שגיאה: ${(err as Error).message}` });
+    return { success: null as string | null, error: `שגיאה: ${(err as Error).message}` };
   }
 }
 

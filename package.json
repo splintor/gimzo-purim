@@ -5,7 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build",
+    "build": "tsc && remix build",
     "dev": "remix dev --manual",
     "start": "remix-serve ./build/index.js",
     "typecheck": "tsc"
@@ -42,6 +42,6 @@
     "vite": "^5"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "24.x"
   }
 }

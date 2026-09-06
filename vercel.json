@@ -1,0 +1,4 @@
+{
+  "installCommand": "node .yarn/releases/yarn-4.18.0.cjs install --immutable",
+  "buildCommand": "node .yarn/releases/yarn-4.18.0.cjs run build"
+}

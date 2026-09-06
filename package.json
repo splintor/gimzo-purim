@@ -5,7 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "tsc && remix build",
+    "build": "remix build",
     "dev": "remix dev --manual",
     "start": "remix-serve ./build/index.js",
     "typecheck": "tsc"

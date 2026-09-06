@@ -12,6 +12,16 @@ export function getDateAndTime(dateString: string, timeString: string) {
   return date;
 }
 
+function parseDiscount(value: string): number {
+  const trimmed = (value ?? '').trim();
+  const isPercent = trimmed.endsWith('%');
+  const parsed = Number(isPercent ? trimmed.slice(0, -1) : trimmed);
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`Invalid quantity discount in settings: ${JSON.stringify(value)}`);
+  }
+  return isPercent ? parsed / 100 : parsed;
+}
+
 export function calculateSum({ sendToAll, familiesCount, fadiha, settings }: {
   sendToAll: boolean;
   familiesCount: number;
@@ -25,7 +35,7 @@ export function calculateSum({ sendToAll, familiesCount, fadiha, settings }: {
   let sum = Number(settings['עלות הזמנה למשפחה']) * familiesCount;
 
   if (familiesCount >= Number(settings['מספר משפחות מינימלי להנחת כמות'])) {
-    sum *= 1 - eval(settings['הנחת כמות'].replace('%', '/100'));
+    sum *= 1 - parseDiscount(settings['הנחת כמות']);
   }
 
   const fadihaEndDate = getDateAndTime(settings['תאריך לסיום הנחת ביטוח פדיחה'], settings['שעה לסיום הנחת ביטוח פדיחה']);

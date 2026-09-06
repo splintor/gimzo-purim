@@ -4852,7 +4852,7 @@ __metadata:
     react-router: "npm:^7.18.2"
     typescript: "npm:^5.9.3"
     ua-parser-js: "npm:^2.0.10"
-    vite: "npm:^5.4.21"
+    vite: "npm:^6.4.3"
   languageName: unknown
   linkType: soft
 

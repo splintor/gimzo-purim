@@ -1197,18 +1197,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/fs-routes@npm:^7.18.2":
-  version: 7.18.2
-  resolution: "@react-router/fs-routes@npm:7.18.2"
+"@react-router/fs-routes@npm:^8.4.0":
+  version: 8.4.0
+  resolution: "@react-router/fs-routes@npm:8.4.0"
   dependencies:
-    minimatch: "npm:^9.0.0"
+    minimatch: "npm:^10.2.5"
   peerDependencies:
-    "@react-router/dev": ^7.18.2
-    typescript: ^5.1.0 || ^6.0.0
+    "@react-router/dev": ^8.4.0
+    typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/b55eb83536192220ec6e96290c11b218cfa777e5c4bd01cf5c24111034b7bbfe17f2d932b9835844a08643a1014dd8721d4a1b31d0cf4db21c7f6434ccb14375
+  checksum: 10c0/077cdfd952872b39cccaa312da25dfd5374d681913f3e1abb096205988c7f35b086da1f10974673afad1f38b976fdba32d0b8d0f983c38be69f91f1ae4c38e3f
   languageName: node
   linkType: hard
 
@@ -1227,22 +1227,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/node@npm:8.4.0":
-  version: 8.4.0
-  resolution: "@react-router/node@npm:8.4.0"
-  dependencies:
-    "@remix-run/node-fetch-server": "npm:^0.14.1"
-  peerDependencies:
-    react-router: 8.4.0
-    typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/87791c79da82c6f3b4398fc909988922ad431c259555f89a467b5162eb0e53463069c67558d7010b43040db0a682b093e1ddbb5b128572a1bee91ef9437c355e
-  languageName: node
-  linkType: hard
-
-"@react-router/node@npm:^8.4.0":
+"@react-router/node@npm:8.4.0, @react-router/node@npm:^8.4.0":
   version: 8.4.0
   resolution: "@react-router/node@npm:8.4.0"
   dependencies:
@@ -4960,7 +4945,7 @@ __metadata:
     "@googleapis/sheets": "npm:^14.0.0"
     "@hebcal/core": "npm:^6.9.3"
     "@react-router/dev": "npm:^8.4.0"
-    "@react-router/fs-routes": "npm:^7.18.2"
+    "@react-router/fs-routes": "npm:^8.4.0"
     "@react-router/node": "npm:^8.4.0"
     "@react-router/serve": "npm:^7.18.2"
     "@remix-run/eslint-config": "npm:^2.17.5"

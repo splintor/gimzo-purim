@@ -1212,7 +1212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/node@npm:7.18.2, @react-router/node@npm:^7.18.2":
+"@react-router/node@npm:7.18.2":
   version: 7.18.2
   resolution: "@react-router/node@npm:7.18.2"
   dependencies:
@@ -1239,6 +1239,21 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/f991cb6abb041ebcf7600a4a2f2dffe1eb96777318a45c6d9dd4b4cd80f9a81690404d99aa0f4695e27900b25cbac6860990b689c92dcd4cfa9146b618e7939d
+  languageName: node
+  linkType: hard
+
+"@react-router/node@npm:^8.4.0":
+  version: 8.4.0
+  resolution: "@react-router/node@npm:8.4.0"
+  dependencies:
+    "@remix-run/node-fetch-server": "npm:^0.14.1"
+  peerDependencies:
+    react-router: 8.4.0
+    typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/87791c79da82c6f3b4398fc909988922ad431c259555f89a467b5162eb0e53463069c67558d7010b43040db0a682b093e1ddbb5b128572a1bee91ef9437c355e
   languageName: node
   linkType: hard
 
@@ -4946,7 +4961,7 @@ __metadata:
     "@hebcal/core": "npm:^6.9.3"
     "@react-router/dev": "npm:^8.3.1"
     "@react-router/fs-routes": "npm:^7.18.2"
-    "@react-router/node": "npm:^7.18.2"
+    "@react-router/node": "npm:^8.4.0"
     "@react-router/serve": "npm:^7.18.2"
     "@remix-run/eslint-config": "npm:^2.17.5"
     "@types/node": "npm:^24.13.3"

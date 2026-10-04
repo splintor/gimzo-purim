@@ -716,15 +716,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hebcal/core@npm:^6.9.3":
-  version: 6.9.3
-  resolution: "@hebcal/core@npm:6.9.3"
+"@hebcal/core@npm:^6.11.0":
+  version: 6.11.0
+  resolution: "@hebcal/core@npm:6.11.0"
   dependencies:
     "@hebcal/hdate": "npm:^0.22.8"
     "@hebcal/noaa": "npm:^0.12.3"
     quick-lru: "npm:^7.3.0"
-    temporal-polyfill: "npm:^1.0.3"
-  checksum: 10c0/be8eab1f6fca2b11567aece940bc75dae73e3cb2e1d577b4acd4bc07d81a106623714a814ec9f54f0cfe59304db6ec91809ad70d48cf0009333a745b0fd620ec
+    temporal-polyfill: "npm:^1.0.5"
+  checksum: 10c0/aae137ab7077e7bcd799e057f3d9286a09f85c24f59fce02ff76503e50615f7f6dd2b8f31c474a21d1c0295a7bb1589a7fbee8ff553e359622bdc1f4d65d49ad
   languageName: node
   linkType: hard
 
@@ -2054,11 +2054,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/react-router@npm:^1.3.6":
-  version: 1.3.6
-  resolution: "@vercel/react-router@npm:1.3.6"
+"@vercel/react-router@npm:^1.3.7":
+  version: 1.3.7
+  resolution: "@vercel/react-router@npm:1.3.7"
   dependencies:
-    "@vercel/static-config": "npm:3.4.3"
+    "@vercel/static-config": "npm:3.4.4"
     ts-morph: "npm:12.0.0"
   peerDependencies:
     "@react-router/dev": 7
@@ -2066,19 +2066,19 @@ __metadata:
     isbot: 5
     react: ">=18"
     react-dom: ">=18"
-  checksum: 10c0/33140770d3747c49fe39c1621884764d1fa511040a86a30def4ba516a4a75fec0a892247484f023cb7cad24b2c12155011583c0e74f39a6f8f3c208f1f77ce92
+  checksum: 10c0/231f484fe8412a6df793702e33d8072ea83650ec5f4f5089d59164cccff914b99e47fa5be0493e39047fadad926942796b50ef08878ad81b2fea44d97f2c8a30
   languageName: node
   linkType: hard
 
-"@vercel/static-config@npm:3.4.3":
-  version: 3.4.3
-  resolution: "@vercel/static-config@npm:3.4.3"
+"@vercel/static-config@npm:3.4.4":
+  version: 3.4.4
+  resolution: "@vercel/static-config@npm:3.4.4"
   dependencies:
     ajv: "npm:8.6.3"
     json-schema-to-ts: "npm:1.6.4"
     oxc-parser: "npm:0.121.0"
     ts-morph: "npm:12.0.0"
-  checksum: 10c0/84cc142386eb610454cdc8a629a9fd42fcdc87838af6de16c66fa851090b8a44ff68e0e21b4d813b1da11f81356aa702391fc2f9fc06c997df38e6fe25d2ed5f
+  checksum: 10c0/7ca78bafaef2a2eac47e54cc8061f133b5571273ff8ccb0157afe6a663a78adca9c648d32d062084fb85f89f5aeb73505b2bc2046195bdcbf1fb385aeab09585
   languageName: node
   linkType: hard
 
@@ -5083,7 +5083,7 @@ __metadata:
   resolution: "my-remix-app@workspace:."
   dependencies:
     "@googleapis/sheets": "npm:^14.0.0"
-    "@hebcal/core": "npm:^6.9.3"
+    "@hebcal/core": "npm:^6.11.0"
     "@react-router/dev": "npm:^8.4.0"
     "@react-router/fs-routes": "npm:^7.18.2"
     "@react-router/node": "npm:^8.4.0"
@@ -5094,7 +5094,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@vercel/analytics": "npm:^2.0.1"
-    "@vercel/react-router": "npm:^1.3.6"
+    "@vercel/react-router": "npm:^1.3.7"
     eslint: "npm:^10.11.0"
     google-auth-library: "npm:^10.5.0"
     isbot: "npm:^5.2.2"
@@ -6524,6 +6524,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"temporal-polyfill@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "temporal-polyfill@npm:1.0.5"
+  dependencies:
+    temporal-spec: "npm:1.0.1"
+    temporal-utils: "npm:1.0.3"
+  checksum: 10c0/88928e40e60d0da0c998af2b8da09768ee2c8784fec7526317fde83f55eb69926209a6bbc4360792cac7ace7371949718bc1f12edac1df0fe42eba5d55a43451
+  languageName: node
+  linkType: hard
+
 "temporal-spec@npm:1.0.1":
   version: 1.0.1
   resolution: "temporal-spec@npm:1.0.1"
@@ -6535,6 +6545,13 @@ __metadata:
   version: 1.0.2
   resolution: "temporal-utils@npm:1.0.2"
   checksum: 10c0/062cacb33662e4e2547e1ebea98e994d3835d98bf528744256714cd0c4219d43ffd526a500bbce12392468f802a01de058885e8d73453c11ed7ca67fa6e327fb
+  languageName: node
+  linkType: hard
+
+"temporal-utils@npm:1.0.3":
+  version: 1.0.3
+  resolution: "temporal-utils@npm:1.0.3"
+  checksum: 10c0/185928a75aba0496ebbbdecbbbbd55cc817756bc39e099424e86477da01042a84ed27482bfc2168b6802fed2f01f004739f174f907e2e125b2fa060a978024b6
   languageName: node
   linkType: hard
 

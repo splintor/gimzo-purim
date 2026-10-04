@@ -1,5 +1,5 @@
 import { HDate } from '@hebcal/core';
-import { Form, useFetcher, useLoaderData, useNavigation } from 'react-router';
+import { Form, useFetcher, useLoaderData, useNavigation, useSearchParams } from 'react-router';
 import { type ActionFunctionArgs, type LoaderFunctionArgs, type MetaFunction, redirect } from "react-router";
 import { type ChangeEvent, FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
@@ -68,6 +68,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Index() {
   const { state } = useNavigation();
+  const [searchParams] = useSearchParams();
+  const forceOpen = searchParams.get('forceOpen') === 'true';
   const { names, settings, initialValues } = useLoaderData<typeof loader>();
   const [selectedName, setSelectedName] = useState('');
   const [sendToAll, setSendToAll] = useState(true);
@@ -145,7 +147,7 @@ export default function Index() {
   }, []);
 
   const endDate = getDateAndTime(settings['תאריך לסיום הרשמה'], settings['שעה לסיום הרשמה']);
-  if (endDate < new Date()) {
+  if (endDate < new Date() && !forceOpen) {
     return (<div className="end-message">
       <div>
         <svg width="96" height="96" fill="none" xmlns="http://www.w3.org/2000/svg">

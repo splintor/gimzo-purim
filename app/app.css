@@ -105,6 +105,11 @@ form {
 
   & input:checked + label span {
     background-color: lightgreen;
+    font-weight: bold;
+
+    &::before {
+      content: '✓ ';
+    }
   }
 
   & label span {

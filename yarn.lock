@@ -716,22 +716,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hebcal/core@npm:^6.11.0":
-  version: 6.11.0
-  resolution: "@hebcal/core@npm:6.11.0"
+"@hebcal/core@npm:^6.14.1":
+  version: 6.14.1
+  resolution: "@hebcal/core@npm:6.14.1"
   dependencies:
-    "@hebcal/hdate": "npm:^0.22.8"
+    "@hebcal/hdate": "npm:^0.23.1"
     "@hebcal/noaa": "npm:^0.12.3"
     quick-lru: "npm:^7.3.0"
     temporal-polyfill: "npm:^1.0.5"
-  checksum: 10c0/aae137ab7077e7bcd799e057f3d9286a09f85c24f59fce02ff76503e50615f7f6dd2b8f31c474a21d1c0295a7bb1589a7fbee8ff553e359622bdc1f4d65d49ad
+  checksum: 10c0/f0d373e2fe8a5fdb6315c75b81d103e23c2d426205fa9b4ff7a068cfe964a26724ff847dd0b88b9a41cd0c7de7317ad848d3d8048f611d8b57a7a115e1062fb9
   languageName: node
   linkType: hard
 
-"@hebcal/hdate@npm:^0.22.8":
-  version: 0.22.8
-  resolution: "@hebcal/hdate@npm:0.22.8"
-  checksum: 10c0/cb6878019214efa5a9913d158062a022251ac1e90d7caa4f91c969e8cd8bf632763f81a36b558829edb3b561a40660c3c28f92bead9a244787ef66ce54d31257
+"@hebcal/hdate@npm:^0.23.1":
+  version: 0.23.1
+  resolution: "@hebcal/hdate@npm:0.23.1"
+  checksum: 10c0/332dbb83cf1b2e4bb8620807a91f2363d56f0ce7b48e29e9aaeb084d54ba4222e492f628374559b5f321a23f96490806f6d50b32f0fdf3506dc24e1e55fafe16
   languageName: node
   linkType: hard
 
@@ -5083,7 +5083,7 @@ __metadata:
   resolution: "my-remix-app@workspace:."
   dependencies:
     "@googleapis/sheets": "npm:^14.0.0"
-    "@hebcal/core": "npm:^6.11.0"
+    "@hebcal/core": "npm:^6.14.1"
     "@react-router/dev": "npm:^8.4.0"
     "@react-router/fs-routes": "npm:^8.4.0"
     "@react-router/node": "npm:^8.4.0"

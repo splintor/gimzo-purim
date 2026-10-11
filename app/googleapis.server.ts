@@ -1,5 +1,4 @@
 import google from '@googleapis/sheets';
-import { GoogleAuth } from 'google-auth-library';
 import { sendToTelegram } from '~/telegram.server';
 
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
@@ -25,7 +24,7 @@ function getGoogleSheets() {
     throw new Error('GOOGLE_SHEET_ID environment variable is required');
   }
 
-  const auth = new GoogleAuth({
+  const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
       private_key: Buffer.from(process.env.GOOGLE_PRIVATE_KEY as string, 'base64').toString('ascii'),

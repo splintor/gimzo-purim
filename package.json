@@ -11,7 +11,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@googleapis/sheets": "^14.0.0",
+    "@googleapis/sheets": "^18.1.1",
     "@hebcal/core": "^6.14.1",
     "@react-router/node": "^8.4.0",
     "@react-router/serve": "^8.4.0",

@@ -87,6 +87,8 @@ export default function Index() {
   const [showPreviouslySelected, setShowPreviouslySelected] = useState(false);
   const [notFoundFamiliesObject, setNotFoundFamiliesObject] = useState<Record<string, boolean>>({});
   const notFoundFamilies = Object.keys(notFoundFamiliesObject);
+  const noSearchResults = !!searchString && showSearch &&
+    !names.some(name => name !== selectedName && name.includes(searchString));
 
   useEffect(() => {
     if (sendToAll) {
@@ -291,14 +293,17 @@ export default function Index() {
             <div className="families-selection"
                  onChange={() => setSelectedFamiliesCount(document.querySelectorAll('input[name=names]:checked').length,
                  )}>
-              {names.filter(name => name !== selectedName && (!searchString || !showSearch || name.includes(searchString))).map(name => (
-                <span key={`checkbox-${name}`}>
+              {names.filter(name => name !== selectedName).map(name => (
+                // Keep non-matching families mounted (hidden) so their checked state and form value survive searching
+                <span key={`checkbox-${name}`}
+                      hidden={!!searchString && showSearch && !name.includes(searchString)}>
                   <input type="checkbox" name="names" id={name} value={name}
                          onClick={() => setTimeout(() => searchRef.current?.focus(), 10)}/>
                   <label htmlFor={name}><span
                     className={showPreviouslySelected && previouslySelectedNames?.has(name) ? 'previously-selected' : ''}>{name}</span></label>
                 </span>),
               )}
+              {noSearchResults && <div className="no-families">לא נמצאו משפחות שמתאימות לחיפוש.</div>}
             </div>
           </div>
 

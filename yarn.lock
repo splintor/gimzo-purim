@@ -534,15 +534,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hebcal/core@npm:^6.14.1":
-  version: 6.14.1
-  resolution: "@hebcal/core@npm:6.14.1"
+"@hebcal/core@npm:^6.14.4":
+  version: 6.14.4
+  resolution: "@hebcal/core@npm:6.14.4"
   dependencies:
     "@hebcal/hdate": "npm:^0.23.1"
-    "@hebcal/noaa": "npm:^0.12.3"
+    "@hebcal/noaa": "npm:^0.12.4"
     quick-lru: "npm:^7.3.0"
-    temporal-polyfill: "npm:^1.0.5"
-  checksum: 10c0/f0d373e2fe8a5fdb6315c75b81d103e23c2d426205fa9b4ff7a068cfe964a26724ff847dd0b88b9a41cd0c7de7317ad848d3d8048f611d8b57a7a115e1062fb9
+    temporal-polyfill: "npm:^1.0.6"
+  checksum: 10c0/a2a9d79f8318a87d91a14fad3038f2a86dfaa3273607e483341c0a1543a80f1bf0d2ae65d08a2907e7865ed8d97f46dd9bf27c71350460b1ef452096aa17e908
   languageName: node
   linkType: hard
 
@@ -553,12 +553,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hebcal/noaa@npm:^0.12.3":
-  version: 0.12.3
-  resolution: "@hebcal/noaa@npm:0.12.3"
+"@hebcal/noaa@npm:^0.12.4":
+  version: 0.12.4
+  resolution: "@hebcal/noaa@npm:0.12.4"
   dependencies:
-    temporal-polyfill: "npm:^1.0.3"
-  checksum: 10c0/ebb84c8aa9c9dfb063655161a635e81b1a7cc74b58a0de7887418e878715c6df64444862cdf7f1cf7d62c072ad943e9265c344e5e773672d7ab9960acb9e0317
+    temporal-polyfill: "npm:^1.0.5"
+  checksum: 10c0/2eb98d759fcd811910b8e70729a4a38fb98756583ed2f31d829fdbe32656daad857153a204368cff0caa89ef7a27e21a5bec8010904d5ab4b86164a47df597c0
   languageName: node
   linkType: hard
 
@@ -3624,7 +3624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^11.0.0, google-auth-library@npm:^11.2.0":
+"google-auth-library@npm:^11.0.0":
   version: 11.2.0
   resolution: "google-auth-library@npm:11.2.0"
   dependencies:
@@ -3635,6 +3635,20 @@ __metadata:
     google-logging-utils: "npm:^2.0.0"
     jws: "npm:^4.0.0"
   checksum: 10c0/c816c32c1c1704bce73e636e37981eb6a0608114bd697b8731db9835ef9b036fd6f7bc8b262f54b8e63cadca19ff17664bbab080b8a176cf2c54e21457de909c
+  languageName: node
+  linkType: hard
+
+"google-auth-library@npm:^11.3.0":
+  version: 11.3.0
+  resolution: "google-auth-library@npm:11.3.0"
+  dependencies:
+    base64-js: "npm:^1.3.0"
+    ecdsa-sig-formatter: "npm:^1.0.11"
+    gaxios: "npm:^7.1.4"
+    gcp-metadata: "npm:^9.0.0"
+    google-logging-utils: "npm:^2.0.0"
+    jws: "npm:^4.0.0"
+  checksum: 10c0/56d7140f04d06f67c24f9e17750345f362b407c3c9df91df59df81c3fb03ff41defc7c7a1a52087a1bff420e91402fc6685092276e2513ed5b0f9af73b4c9717
   languageName: node
   linkType: hard
 
@@ -4694,7 +4708,7 @@ __metadata:
   resolution: "my-remix-app@workspace:."
   dependencies:
     "@googleapis/sheets": "npm:^18.1.1"
-    "@hebcal/core": "npm:^6.14.1"
+    "@hebcal/core": "npm:^6.14.4"
     "@react-router/dev": "npm:^8.4.0"
     "@react-router/fs-routes": "npm:^8.4.0"
     "@react-router/node": "npm:^8.4.0"
@@ -4707,7 +4721,7 @@ __metadata:
     "@vercel/analytics": "npm:^2.0.1"
     "@vercel/react-router": "npm:^1.3.7"
     eslint: "npm:^10.12.0"
-    google-auth-library: "npm:^11.2.0"
+    google-auth-library: "npm:^11.3.0"
     isbot: "npm:^5.2.2"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
@@ -6035,16 +6049,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"temporal-polyfill@npm:^1.0.3":
-  version: 1.0.4
-  resolution: "temporal-polyfill@npm:1.0.4"
-  dependencies:
-    temporal-spec: "npm:1.0.1"
-    temporal-utils: "npm:1.0.2"
-  checksum: 10c0/b93905805462090e94069841bfa99d162aaec07766a2fa4a8aed28159e3c3296c03a3224b5c6ea14cc65890f299094b21d1702ee6d3cd15cdaae967c22809b33
-  languageName: node
-  linkType: hard
-
 "temporal-polyfill@npm:^1.0.5":
   version: 1.0.5
   resolution: "temporal-polyfill@npm:1.0.5"
@@ -6055,17 +6059,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"temporal-polyfill@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "temporal-polyfill@npm:1.0.6"
+  dependencies:
+    temporal-spec: "npm:1.0.1"
+    temporal-utils: "npm:1.0.3"
+  checksum: 10c0/f67f3d0edf62335cc572f7680cfc9f3da6b9124fbcbc22fd016d17fcedb64ac8c7ce26886474c1ecc549a1e5fe0bc167988da5c59d51d88956a5a7e7195fb2b1
+  languageName: node
+  linkType: hard
+
 "temporal-spec@npm:1.0.1":
   version: 1.0.1
   resolution: "temporal-spec@npm:1.0.1"
   checksum: 10c0/99f6bfe4a8e59cd0664d0e97706798a1e10d42b1b682da9b60778a4cb9a23362da01ea3d83a674ef426ed743bbab835e2e3d1acea5d2d4a9eabe33863237b014
-  languageName: node
-  linkType: hard
-
-"temporal-utils@npm:1.0.2":
-  version: 1.0.2
-  resolution: "temporal-utils@npm:1.0.2"
-  checksum: 10c0/062cacb33662e4e2547e1ebea98e994d3835d98bf528744256714cd0c4219d43ffd526a500bbce12392468f802a01de058885e8d73453c11ed7ca67fa6e327fb
   languageName: node
   linkType: hard
 

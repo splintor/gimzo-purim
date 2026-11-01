@@ -919,16 +919,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/dev@npm:^8.5.0":
-  version: 8.5.0
-  resolution: "@react-router/dev@npm:8.5.0"
+"@react-router/dev@npm:^8.5.1":
+  version: 8.5.1
+  resolution: "@react-router/dev@npm:8.5.1"
   dependencies:
     "@babel/core": "npm:^7.29.7"
     "@babel/generator": "npm:^7.29.7"
     "@babel/parser": "npm:^7.29.7"
     "@babel/traverse": "npm:^7.29.7"
     "@babel/types": "npm:^7.29.7"
-    "@react-router/node": "npm:8.5.0"
+    "@react-router/node": "npm:8.5.1"
     "@remix-run/node-fetch-server": "npm:^0.14.1"
     babel-dead-code-elimination: "npm:^1.0.12"
     chokidar: "npm:^5.0.0"
@@ -947,9 +947,9 @@ __metadata:
     tinyglobby: "npm:^0.2.16"
     valibot: "npm:^1.4.1"
   peerDependencies:
-    "@react-router/serve": ^8.5.0
+    "@react-router/serve": ^8.5.1
     "@vitejs/plugin-rsc": ~0.5.26
-    react-router: ^8.5.0
+    react-router: ^8.5.1
     react-server-dom-webpack: ^19.2.7
     typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
     vite: ^7.0.0 || ^8.0.0
@@ -967,7 +967,7 @@ __metadata:
       optional: true
   bin:
     react-router: bin.cjs
-  checksum: 10c0/e2ab294743b46e2bae3cc49fc2f769d930f31b924c180106412664c518849c9340c13d85ca9b12f65823e1ad1360474aa6c3cfe5010b193e956c6d49d012cb11
+  checksum: 10c0/f6b619a80e8df8a6983866efd9853ef8bc24fcbf4c8b110fb2c5af005671d09b14e0476858127532c90c6bbaae69ac51f4a8436a75dae61a0d9bd48d7ab815de
   languageName: node
   linkType: hard
 
@@ -987,18 +987,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/fs-routes@npm:^8.5.0":
-  version: 8.5.0
-  resolution: "@react-router/fs-routes@npm:8.5.0"
+"@react-router/fs-routes@npm:^8.5.1":
+  version: 8.5.1
+  resolution: "@react-router/fs-routes@npm:8.5.1"
   dependencies:
     minimatch: "npm:^10.2.5"
   peerDependencies:
-    "@react-router/dev": ^8.5.0
+    "@react-router/dev": ^8.5.1
     typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/bdcaf12faa53c7b85aae5216867c4cf2bccb0803c0083f9c95b741f8c3c79cf35de7675326af2bdb6b815f69223665ea55d39ce84b47ccbbcf569611a80e6245
+  checksum: 10c0/0ea47c9a5540dbc153230076cef9f406737c438487c5f62cba39dfa28127fa3cea338ba4f17fd32542efa5bcc58674ee986aeaf4c952f8bab8714aa2e69031f5
   languageName: node
   linkType: hard
 
@@ -1017,18 +1017,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/node@npm:8.5.0":
-  version: 8.5.0
-  resolution: "@react-router/node@npm:8.5.0"
+"@react-router/node@npm:8.5.1":
+  version: 8.5.1
+  resolution: "@react-router/node@npm:8.5.1"
   dependencies:
     "@remix-run/node-fetch-server": "npm:^0.14.1"
   peerDependencies:
-    react-router: 8.5.0
+    react-router: 8.5.1
     typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/9cb6ba465e23041c2dbbaf1eeb4205781e781919396df628d3010861ed6a1d83fee1e2c94c3627322dab65c7fa1ac41d03a5298623d58ef21d3f485209928e1f
+  checksum: 10c0/f20888339c0a8dd95181b5b42928f6f07fb99bd3701f2359955862dc65135415acc42424b28ab4ad1d0c4de31cdd2d3546333ba561c9cb99e0a4b19d16e87345
   languageName: node
   linkType: hard
 
@@ -1303,12 +1303,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^26.6.5":
-  version: 26.6.5
-  resolution: "@types/node@npm:26.6.5"
+"@types/node@npm:^26.6.6":
+  version: 26.6.6
+  resolution: "@types/node@npm:26.6.6"
   dependencies:
     undici-types: "npm:~8.9.0"
-  checksum: 10c0/4f791f69466ace7842c09e7bef96cb1ddbb65cf3db916ef7e84f0e2b2a17220b6b816dc7539d01520cadfb17ed7169b8214910900493e0a83be8bc7d124ec20a
+  checksum: 10c0/5cb63f644f6e85a257a9cd2403cbcbe196760e2a35fd3ec9fb8b5cff663e14cc832b198cc17b53f870a2e30900ed45a1fb3f53e6589aba26b8e8c484aa672053
   languageName: node
   linkType: hard
 
@@ -4732,12 +4732,12 @@ __metadata:
   dependencies:
     "@googleapis/sheets": "npm:^18.1.1"
     "@hebcal/core": "npm:^6.14.4"
-    "@react-router/dev": "npm:^8.5.0"
-    "@react-router/fs-routes": "npm:^8.5.0"
+    "@react-router/dev": "npm:^8.5.1"
+    "@react-router/fs-routes": "npm:^8.5.1"
     "@react-router/node": "npm:^8.4.0"
     "@react-router/serve": "npm:^8.4.0"
     "@remix-run/eslint-config": "npm:^2.17.5"
-    "@types/node": "npm:^26.6.5"
+    "@types/node": "npm:^26.6.6"
     "@types/react": "npm:^19.3.0"
     "@types/react-dom": "npm:^19.3.0"
     "@types/ua-parser-js": "npm:^0.7.39"

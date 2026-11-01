@@ -534,15 +534,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hebcal/core@npm:^6.14.4":
-  version: 6.14.4
-  resolution: "@hebcal/core@npm:6.14.4"
+"@hebcal/core@npm:^6.14.7":
+  version: 6.14.7
+  resolution: "@hebcal/core@npm:6.14.7"
   dependencies:
     "@hebcal/hdate": "npm:^0.23.1"
     "@hebcal/noaa": "npm:^0.12.4"
     quick-lru: "npm:^7.3.0"
     temporal-polyfill: "npm:^1.0.6"
-  checksum: 10c0/a2a9d79f8318a87d91a14fad3038f2a86dfaa3273607e483341c0a1543a80f1bf0d2ae65d08a2907e7865ed8d97f46dd9bf27c71350460b1ef452096aa17e908
+  checksum: 10c0/150c6ea5cf48ac65168127446bb34766a09c344fb26274549ca898dea4972776076ce58c70ce8221c8ecb99070d2e41130f7be1144688183f0fd4a28c03ec12e
   languageName: node
   linkType: hard
 
@@ -971,19 +971,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/express@npm:8.4.0":
-  version: 8.4.0
-  resolution: "@react-router/express@npm:8.4.0"
+"@react-router/express@npm:8.5.1":
+  version: 8.5.1
+  resolution: "@react-router/express@npm:8.5.1"
   dependencies:
-    "@react-router/node": "npm:8.4.0"
+    "@react-router/node": "npm:8.5.1"
   peerDependencies:
     express: ^4.22.2 || ^5
-    react-router: 8.4.0
+    react-router: 8.5.1
     typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/900045703606010ca74f9e98ce98b56a46eea6950a3dcf500dae675813f43cbdfa876349518f37378f87176553ff977b89794418cf0ea1aa3f5550e7fb6ca22b
+  checksum: 10c0/3a56821db48e6d148d53f04f206383beb294b822dd8fe28d97ca01eee312b89e9db40e44f30ef588079513f837aa26516d19b0ae11eed98b6e73c3346acfb92a
   languageName: node
   linkType: hard
 
@@ -1002,22 +1002,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/node@npm:8.4.0, @react-router/node@npm:^8.4.0":
-  version: 8.4.0
-  resolution: "@react-router/node@npm:8.4.0"
-  dependencies:
-    "@remix-run/node-fetch-server": "npm:^0.14.1"
-  peerDependencies:
-    react-router: 8.4.0
-    typescript: ^5.1.0 || ^6.0.0 || ^7.0.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/87791c79da82c6f3b4398fc909988922ad431c259555f89a467b5162eb0e53463069c67558d7010b43040db0a682b093e1ddbb5b128572a1bee91ef9437c355e
-  languageName: node
-  linkType: hard
-
-"@react-router/node@npm:8.5.1":
+"@react-router/node@npm:8.5.1, @react-router/node@npm:^8.5.1":
   version: 8.5.1
   resolution: "@react-router/node@npm:8.5.1"
   dependencies:
@@ -1032,22 +1017,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/serve@npm:^8.4.0":
-  version: 8.4.0
-  resolution: "@react-router/serve@npm:8.4.0"
+"@react-router/serve@npm:^8.5.1":
+  version: 8.5.1
+  resolution: "@react-router/serve@npm:8.5.1"
   dependencies:
-    "@react-router/express": "npm:8.4.0"
-    "@react-router/node": "npm:8.4.0"
+    "@react-router/express": "npm:8.5.1"
+    "@react-router/node": "npm:8.5.1"
     "@remix-run/node-fetch-server": "npm:^0.14.1"
     compression: "npm:^1.8.1"
     express: "npm:^5.2.1"
     morgan: "npm:^1.10.1"
     source-map-support: "npm:^0.5.21"
   peerDependencies:
-    react-router: 8.4.0
+    react-router: 8.5.1
   bin:
     react-router-serve: bin.cjs
-  checksum: 10c0/2279845b4d66072c776b4f6f0639c62afb25e30456d8369ca1f03be68caaf704a1144934c4fbc5ab70c25a642a545eba9a55d679aeb337ec749f7b88b3901e3d
+  checksum: 10c0/a79e8f906186132e72e6a4e96c7baa51ca1cc5c5b7370fa0acecf6eaa1cab2f5d9ace1883206fe1b42ffdaf1769d012926a8d5ef45b27dbc70dfcbcc0519a899
   languageName: node
   linkType: hard
 
@@ -3518,6 +3503,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gaxios@npm:^8.3.1":
+  version: 8.3.2
+  resolution: "gaxios@npm:8.3.2"
+  dependencies:
+    extend: "npm:^3.0.2"
+    https-proxy-agent: "npm:^7.0.1"
+    node-fetch: "npm:^3.3.2"
+  checksum: 10c0/112ba770aed72a4fc794b869beb57f9a88d76ceb33329ad16c48224793600a8bd31b6dcafee9ab28272113dd384fd03a6991e9913a89b7bb90e0b6b56829e4bb
+  languageName: node
+  linkType: hard
+
 "gcp-metadata@npm:^9.0.0":
   version: 9.1.0
   resolution: "gcp-metadata@npm:9.1.0"
@@ -3526,6 +3522,17 @@ __metadata:
     google-logging-utils: "npm:^2.0.0"
     json-bigint: "npm:^1.0.0"
   checksum: 10c0/7241f9509cbbe4990604a5c44d50ce8722d98484bc8e31615766a2a81dfe9c29912ed2d4f44861ec4e86c34cfb52eff89703ea8f991595a8f1b14e6790a3db39
+  languageName: node
+  linkType: hard
+
+"gcp-metadata@npm:^9.2.1":
+  version: 9.2.3
+  resolution: "gcp-metadata@npm:9.2.3"
+  dependencies:
+    gaxios: "npm:^8.3.1"
+    google-logging-utils: "npm:^2.1.0"
+    json-bigint: "npm:^1.0.0"
+  checksum: 10c0/86c4fc28edd923ddd7c3a05b986cda1f395a12a9c090bb8d5e094f8330fca48c3a2b34f40c69752effdb72f05f8cf28e52dcba05052d57472302abb0abdade84
   languageName: node
   linkType: hard
 
@@ -3661,17 +3668,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^11.3.0":
-  version: 11.3.0
-  resolution: "google-auth-library@npm:11.3.0"
+"google-auth-library@npm:^11.3.2":
+  version: 11.3.2
+  resolution: "google-auth-library@npm:11.3.2"
   dependencies:
     base64-js: "npm:^1.3.0"
     ecdsa-sig-formatter: "npm:^1.0.11"
-    gaxios: "npm:^7.1.4"
-    gcp-metadata: "npm:^9.0.0"
-    google-logging-utils: "npm:^2.0.0"
+    gaxios: "npm:^8.3.1"
+    gcp-metadata: "npm:^9.2.1"
+    google-logging-utils: "npm:^2.1.0"
     jws: "npm:^4.0.0"
-  checksum: 10c0/56d7140f04d06f67c24f9e17750345f362b407c3c9df91df59df81c3fb03ff41defc7c7a1a52087a1bff420e91402fc6685092276e2513ed5b0f9af73b4c9717
+  checksum: 10c0/f049a897fbe77eda10e640b7ae4804aab611b9618d33e47080925f32a348b98d352a7932f147c14f0aaf1567583acadb692d8bf863e267201bb5d3e86a61409f
   languageName: node
   linkType: hard
 
@@ -3679,6 +3686,13 @@ __metadata:
   version: 2.0.1
   resolution: "google-logging-utils@npm:2.0.1"
   checksum: 10c0/f8926ef09ad94e2c9f0bca4c455e300f610a7b13da6fb055aecaab79975fc0fe0d308241063da9bdbfc19cf450088258a3c4c7ce5ffdf79c77d74c71a9427881
+  languageName: node
+  linkType: hard
+
+"google-logging-utils@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "google-logging-utils@npm:2.1.1"
+  checksum: 10c0/53653292f82c064097ebc99015d7901b47c8ca9918d2077ba26fe831af6be8535707896ba47e15d419388b25f8c795bdd8a24cb45f5b9542c1cb2e61c21933bc
   languageName: node
   linkType: hard
 
@@ -4731,11 +4745,11 @@ __metadata:
   resolution: "my-remix-app@workspace:."
   dependencies:
     "@googleapis/sheets": "npm:^18.1.1"
-    "@hebcal/core": "npm:^6.14.4"
+    "@hebcal/core": "npm:^6.14.7"
     "@react-router/dev": "npm:^8.5.1"
     "@react-router/fs-routes": "npm:^8.5.1"
-    "@react-router/node": "npm:^8.4.0"
-    "@react-router/serve": "npm:^8.4.0"
+    "@react-router/node": "npm:^8.5.1"
+    "@react-router/serve": "npm:^8.5.1"
     "@remix-run/eslint-config": "npm:^2.17.5"
     "@types/node": "npm:^26.6.6"
     "@types/react": "npm:^19.3.0"
@@ -4744,11 +4758,11 @@ __metadata:
     "@vercel/analytics": "npm:^2.0.1"
     "@vercel/react-router": "npm:^1.3.7"
     eslint: "npm:^10.13.0"
-    google-auth-library: "npm:^11.3.0"
+    google-auth-library: "npm:^11.3.2"
     isbot: "npm:^5.2.2"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
-    react-router: "npm:^8.4.0"
+    react-router: "npm:^8.5.1"
     typescript: "npm:^7.0.2"
     ua-parser-js: "npm:^2.0.10"
     vite: "npm:^8.3.5"
@@ -5298,13 +5312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.16.0":
-  version: 6.16.0
-  resolution: "qs@npm:6.16.0"
+"qs@npm:^6.17.1":
+  version: 6.17.1
+  resolution: "qs@npm:6.17.1"
   dependencies:
     es-define-property: "npm:^1.0.1"
     side-channel: "npm:^1.1.1"
-  checksum: 10c0/eb3e31992fbd70e31a1791e571ed817d70975de7d3bfcbbbec93d77d1dd305877e9e8fdbcc62303c228ee5c3606685622cd6231c042dbc4790bb4e7c65fcbe18
+  checksum: 10c0/55f09dd0282fda70ce9475719158f910f2214477b95aa7284675fb9977c9cdae89fb495423399227331de76766703aaa71372e96cded05046e21713c033e885d
   languageName: node
   linkType: hard
 
@@ -5373,19 +5387,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^8.4.0":
-  version: 8.4.0
-  resolution: "react-router@npm:8.4.0"
+"react-router@npm:^8.5.1":
+  version: 8.5.1
+  resolution: "react-router@npm:8.5.1"
   dependencies:
     "@remix-run/route-pattern": "npm:^0.22.1"
     cookie-es: "npm:^3.1.1"
   peerDependencies:
+    "@types/react": ">=19.2.0"
+    "@types/react-dom": ">=19.2.0"
     react: ">=19.2.7"
     react-dom: ">=19.2.7"
   peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
     react-dom:
       optional: true
-  checksum: 10c0/37ad46ed19aad7fcb6432fcc65b0817ac90898f6bb8cfaa406c151767fd59f56ee1f5ab56cdf90468ec03a7952e42f0494372b226fdad8fb316854ef04c5d9be
+  checksum: 10c0/07503a26d5c5669d84d044e59e3a7f97dad36946dbb9ade14f243f187096bc12cea5bf7401f8681c602d9100238cef752bd3d0e6a742e1c0794e2abd20662368
   languageName: node
   linkType: hard
 

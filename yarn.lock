@@ -525,12 +525,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googleapis/sheets@npm:^18.1.1":
-  version: 18.1.1
-  resolution: "@googleapis/sheets@npm:18.1.1"
+"@googleapis/sheets@npm:^18.1.2":
+  version: 18.1.2
+  resolution: "@googleapis/sheets@npm:18.1.2"
   dependencies:
     googleapis-common: "npm:^9.0.0"
-  checksum: 10c0/84c2b66a8375f10bea2aeed406da82224e22a76eaa330dd72b0f9be3b7c4cead62e187e4be65afe7c4372b053cac7a3468aaf1d94ef8d8f7dad5341d5cee048d
+  checksum: 10c0/b7ae573ed942d4107d292fd87f11c199394bbf51dd8427653f1864788fb6d361fd7909aa64e8acefbdf9424448cbe7f5d5170c792fff322eb7a91a4e423d5808
   languageName: node
   linkType: hard
 
@@ -3668,9 +3668,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^11.3.2":
-  version: 11.3.2
-  resolution: "google-auth-library@npm:11.3.2"
+"google-auth-library@npm:^11.3.3":
+  version: 11.3.3
+  resolution: "google-auth-library@npm:11.3.3"
   dependencies:
     base64-js: "npm:^1.3.0"
     ecdsa-sig-formatter: "npm:^1.0.11"
@@ -3678,7 +3678,7 @@ __metadata:
     gcp-metadata: "npm:^9.2.1"
     google-logging-utils: "npm:^2.1.0"
     jws: "npm:^4.0.0"
-  checksum: 10c0/f049a897fbe77eda10e640b7ae4804aab611b9618d33e47080925f32a348b98d352a7932f147c14f0aaf1567583acadb692d8bf863e267201bb5d3e86a61409f
+  checksum: 10c0/9a8271ea21fd41ebf1e9a6944d56e334e15779f65b5d9e0087ca6571ea2bbb0e50bbf0c8cb88892389a90cedcb988752e3bc3d6b05d4befdc8db7c7c7cceb7f5
   languageName: node
   linkType: hard
 
@@ -4744,7 +4744,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "my-remix-app@workspace:."
   dependencies:
-    "@googleapis/sheets": "npm:^18.1.1"
+    "@googleapis/sheets": "npm:^18.1.2"
     "@hebcal/core": "npm:^6.14.7"
     "@react-router/dev": "npm:^8.5.1"
     "@react-router/fs-routes": "npm:^8.5.1"
@@ -4758,7 +4758,7 @@ __metadata:
     "@vercel/analytics": "npm:^2.0.1"
     "@vercel/react-router": "npm:^1.3.7"
     eslint: "npm:^10.13.0"
-    google-auth-library: "npm:^11.3.2"
+    google-auth-library: "npm:^11.3.3"
     isbot: "npm:^5.2.2"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
